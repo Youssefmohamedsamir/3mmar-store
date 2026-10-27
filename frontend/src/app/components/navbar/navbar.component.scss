@@ -31,9 +31,10 @@
 
 .logo-box {
   position: relative;
-  width: 62px;
-  height: 48px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: #090e14;
   border: 1.5px solid rgba(0, 230, 118, 0.5);
@@ -42,24 +43,26 @@
   justify-content: center;
   transition: all 0.25s ease;
   box-shadow: 0 0 12px rgba(0, 230, 118, 0.25);
+  flex-shrink: 0;
 }
 
 .brand-area:hover .logo-box {
   border-color: #00E676;
   box-shadow: 0 0 18px rgba(0, 230, 118, 0.5);
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .brand-logo {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
 .logo-glow-ring {
   position: absolute;
   inset: 0;
-  border-radius: 10px;
+  border-radius: 50%;
   pointer-events: none;
 }
 
@@ -166,12 +169,14 @@
   align-items: center;
   justify-content: center;
   padding: 1.5px;
-  border-radius: 8px;
+  border-radius: 20px;
   background: transparent;
   border: none;
   cursor: pointer;
   overflow: hidden;
   transition: all 0.25s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   .login-glow {
     position: absolute;
@@ -188,16 +193,23 @@
     gap: 6px;
     background: #0d151e;
     color: #f1f5f9;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    padding: 7px 14px;
-    border-radius: 7px;
+    padding: 6px 13px;
+    border-radius: 19px;
     transition: all 0.2s ease;
+    white-space: nowrap;
+    line-height: 1;
+
+    span {
+      white-space: nowrap;
+    }
 
     .login-icon {
       width: 14px;
       height: 14px;
       stroke: #00E676;
+      flex-shrink: 0;
     }
   }
 
@@ -332,5 +344,31 @@
   }
   .mobile-only {
     display: flex !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-content {
+    gap: 8px;
+  }
+  .brand-area {
+    gap: 8px;
+  }
+  .logo-box {
+    width: 36px;
+    height: 36px;
+  }
+  .store-title {
+    font-size: 0.98rem;
+  }
+  .btn-login-animated .login-inner {
+    padding: 5px 10px;
+    font-size: 0.74rem;
+    gap: 4px;
+
+    .login-icon {
+      width: 12px;
+      height: 12px;
+    }
   }
 }
