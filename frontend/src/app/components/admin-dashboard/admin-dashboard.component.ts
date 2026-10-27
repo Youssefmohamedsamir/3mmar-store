@@ -72,6 +72,50 @@ export class AdminDashboardComponent implements OnInit {
     public auth: AuthService
   ) {}
 
+  setTab(tab: 'analytics' | 'products' | 'offers' | 'settings' | 'account'): void {
+    this.activeTab = tab;
+    this.showProductModal = false;
+    this.showOfferModal = false;
+  }
+
+  onProductImageSelected(event: any): void {
+    const file = event.target?.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('حجم الصورة كبير، يرجى اختيار صورة أقل من 5 ميجابايت');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.editingProduct.imageUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  onOfferImageSelected(event: any): void {
+    const file = event.target?.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('حجم الصورة كبير، يرجى اختيار صورة أقل من 5 ميجابايت');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.editingOffer.imageUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeProductImage(): void {
+    this.editingProduct.imageUrl = '';
+  }
+
+  removeOfferImage(): void {
+    this.editingOffer.imageUrl = '';
+  }
+
   updateAccountCredentials(): void {
     this.accountMsg = '';
     this.accountError = '';
