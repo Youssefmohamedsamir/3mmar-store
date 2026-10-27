@@ -37,7 +37,14 @@ export class App implements OnInit {
   selectedCategory: string = 'IPhone';
   isAuthModalOpen = false;
   pendingOrderAction: { productId: number; type: 'WhatsApp' | 'Phone' } | null = null;
-  activeView: 'store' | 'admin' = 'store';
+  activeView: 'home' | 'category' | 'admin' = 'home';
+
+  categoryTabs = [
+    { id: 'IPhone', name: 'أجهزة iPhone', subtitle: 'Apple' },
+    { id: 'Android', name: 'أجهزة Android', subtitle: 'Samsung & Xiaomi' },
+    { id: 'Accessories', name: 'إكسسوارات', subtitle: 'Original Gear' },
+    { id: 'Other', name: 'أجهزة أخرى', subtitle: 'Smart Tech' }
+  ];
 
   constructor(
     private analyticsService: AnalyticsService,
@@ -53,21 +60,19 @@ export class App implements OnInit {
   }
 
   handleStart(): void {
-    this.activeView = 'store';
-    setTimeout(() => {
-      const el = document.getElementById('categories');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 50);
+    this.selectedCategory = 'IPhone';
+    this.activeView = 'category';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   handleCategoryChange(category: string): void {
     this.selectedCategory = category;
-    const el = document.getElementById('products-showcase');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    this.activeView = 'category';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  switchCategory(category: string): void {
+    this.selectedCategory = category;
   }
 
   handleRequireAuth(action: { productId: number; type: 'WhatsApp' | 'Phone' }): void {
@@ -85,14 +90,14 @@ export class App implements OnInit {
           const currentSettings = this.settingsService.settings();
 
           if (action.type === 'WhatsApp') {
-            const cleanPhone = (currentSettings.whatsApp || '201000000000').replace(/[^0-9]/g, '');
+            const cleanPhone = (currentSettings.whatsApp || '01044858440').replace(/[^0-9]/g, '');
             const user = this.auth.currentUser();
             const clientName = user?.fullName ? ` من العميل: ${user.fullName}` : '';
             const message = `مرحباً متجر عمار، أود طلب المنتج:\n*${product.name}*\nالسعر: ${product.price.toLocaleString()} ج.م\nالقسم: ${product.category}${clientName}`;
             const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
           } else {
-            const cleanPhone = (currentSettings.phone || '+201000000000').trim();
+            const cleanPhone = (currentSettings.phone || '01044858440').trim();
             window.location.href = `tel:${cleanPhone}`;
           }
         }
@@ -108,7 +113,20 @@ export class App implements OnInit {
       return;
     }
 
-    this.activeView = 'store';
+    if (sectionId === 'categories' || sectionId === 'products') {
+      this.activeView = 'category';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (sectionId === 'hero' || sectionId === 'home') {
+      this.activeView = 'home';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // Otherwise offers or media
+    this.activeView = 'home';
     setTimeout(() => {
       const el = document.getElementById(sectionId);
       if (el) {

@@ -41,6 +41,16 @@ export class ProductListComponent implements OnInit, OnChanges {
   }
 
   loadProducts(): void {
+    const isCached = this.productService.hasCached(this.selectedCategory) && !this.searchQuery;
+    if (isCached) {
+      const cached = this.productService.getCached(this.selectedCategory);
+      if (cached) {
+        this.products = cached;
+        this.loading = false;
+        return;
+      }
+    }
+
     this.loading = true;
     this.productService.getProducts(this.selectedCategory, this.searchQuery).subscribe({
       next: (data) => {

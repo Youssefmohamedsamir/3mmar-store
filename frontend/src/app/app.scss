@@ -9,6 +9,83 @@
   flex: 1;
 }
 
+/* Category Page View */
+.category-page-view {
+  padding: 30px 0 60px 0;
+  min-height: calc(100vh - 160px);
+}
+
+.category-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  .btn-back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: #00E676;
+    }
+
+    &:hover {
+      background: rgba(0, 230, 118, 0.15);
+      border-color: rgba(0, 230, 118, 0.4);
+      color: #ffffff;
+      transform: translateX(3px);
+    }
+  }
+
+  .category-tabs-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .cat-tab-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      &.active {
+        background: rgba(0, 230, 118, 0.15);
+        border-color: #00E676;
+        color: #00E676;
+        font-weight: 700;
+        box-shadow: 0 0 14px rgba(0, 230, 118, 0.25);
+      }
+    }
+  }
+}
+
 /* iOS PWA Install Modal */
 .ios-install-backdrop {
   position: fixed;

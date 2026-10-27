@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, timeout } from 'rxjs';
 import { User, AuthResponse } from '../models/models';
 
 @Injectable({
@@ -54,18 +54,21 @@ export class AuthService {
 
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
+      timeout(8000),
       tap(res => this.setSession(res))
     );
   }
 
   register(data: { fullName: string; email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
+      timeout(8000),
       tap(res => this.setSession(res))
     );
   }
 
   socialLogin(data: { provider: 'Google' | 'Facebook'; providerId: string; email: string; fullName: string; avatarUrl?: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/social-login`, data).pipe(
+      timeout(8000),
       tap(res => this.setSession(res))
     );
   }
@@ -74,6 +77,7 @@ export class AuthService {
     return this.http.get<AuthResponse>(`${this.apiUrl}/me`, {
       headers: { Authorization: `Bearer ${this.getToken()}` }
     }).pipe(
+      timeout(8000),
       tap(res => this.setSession(res))
     );
   }
@@ -82,6 +86,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/change-credentials`, data, {
       headers: { Authorization: `Bearer ${this.getToken()}` }
     }).pipe(
+      timeout(8000),
       tap(res => this.setSession(res))
     );
   }

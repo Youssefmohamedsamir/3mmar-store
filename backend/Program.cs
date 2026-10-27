@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:5000");
 
 // Add Database Context
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=amarstore.db";

@@ -37,11 +37,17 @@ export class AuthModalComponent {
     this.errorMessage = '';
   }
 
+  private getFriendlyErrorMessage(err: any, defaultMsg: string): string {
+    if (err.name === 'TimeoutError' || err.status === 0) {
+      return 'تعذر الاتصال بسيرفر الباك إند، تأكد من تشغيل الباك إند (dotnet run على المنفذ 5000)';
+    }
+    return err.error?.message || defaultMsg;
+  }
+
   handleSocialLogin(provider: 'Google' | 'Facebook'): void {
     this.loading = true;
     this.errorMessage = '';
 
-    // Simulated Social OAuth Provider handshake (can be connected directly to Google Client ID / FB App ID)
     const mockEmail = provider === 'Google' ? 'google.user@example.com' : 'facebook.user@example.com';
     const mockName = provider === 'Google' ? 'مستخدم جوجل' : 'مستخدم فيسبوك';
 
@@ -59,7 +65,7 @@ export class AuthModalComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'تعذر تسجيل الدخول بواسطة ' + provider;
+        this.errorMessage = this.getFriendlyErrorMessage(err, 'تعذر تسجيل الدخول بواسطة ' + provider);
       }
     });
   }
@@ -82,7 +88,7 @@ export class AuthModalComponent {
         },
         error: (err) => {
           this.loading = false;
-          this.errorMessage = err.error?.message || 'البريد أو كلمة المرور غير صحيحة';
+          this.errorMessage = this.getFriendlyErrorMessage(err, 'البريد أو كلمة المرور غير صحيحة');
         }
       });
     } else {
@@ -99,7 +105,7 @@ export class AuthModalComponent {
         },
         error: (err) => {
           this.loading = false;
-          this.errorMessage = err.error?.message || 'تعذر إنشاء الحساب';
+          this.errorMessage = this.getFriendlyErrorMessage(err, 'تعذر إنشاء الحساب');
         }
       });
     }
