@@ -1,12 +1,12 @@
 {
-  "name": "3mmar Store | متجر عمار",
-  "short_name": "3mmar Store",
+  "name": "3mmar $tore",
+  "short_name": "3mmar $tore",
   "start_url": "/",
   "id": "/",
   "display": "standalone",
   "background_color": "#070a0e",
   "theme_color": "#00E676",
-  "description": "3mmar Store - متجر عمار للهواتف والإكسسوارات في مدينة السادات",
+  "description": "3mmar $tore - متجر عمار للهواتف والإكسسوارات في مدينة السادات",
   "icons": [
     {
       "src": "logo.png",

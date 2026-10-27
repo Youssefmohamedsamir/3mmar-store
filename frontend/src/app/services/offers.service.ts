@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 import { Offer } from '../models/models';
 import { AuthService } from './auth.service';
 import { getApiBaseUrl } from './api-config';
@@ -13,6 +13,8 @@ export class OffersService {
     return `${getApiBaseUrl()}/offers`;
   }
 
+  private cachedOffers: Offer[] | null = null;
+
   constructor(
     private http: HttpClient,
     private auth: AuthService
@@ -24,8 +26,17 @@ export class OffersService {
     };
   }
 
-  getOffers(): Observable<Offer[]> {
-    return this.http.get<Offer[]>(this.apiUrl);
+  clearCache(): void {
+    this.cachedOffers = null;
+  }
+
+  getOffers(forceRefresh: boolean = false): Observable<Offer[]> {
+    if (!forceRefresh && this.cachedOffers !== null) {
+      return of(this.cachedOffers);
+    }
+    return this.http.get<Offer[]>(this.apiUrl).pipe(
+      tap(data => this.cachedOffers = data)
+    );
   }
 
   getAllOffersAdmin(): Observable<Offer[]> {
@@ -37,18 +48,24 @@ export class OffersService {
   createOffer(offer: Partial<Offer>): Observable<Offer> {
     return this.http.post<Offer>(this.apiUrl, offer, {
       headers: this.getAuthHeaders()
-    });
+    }).pipe(
+      tap(() => this.clearCache())
+    );
   }
 
   updateOffer(id: number, offer: Partial<Offer>): Observable<Offer> {
     return this.http.put<Offer>(`${this.apiUrl}/${id}`, offer, {
       headers: this.getAuthHeaders()
-    });
+    }).pipe(
+      tap(() => this.clearCache())
+    );
   }
 
   deleteOffer(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, {
       headers: this.getAuthHeaders()
-    });
+    }).pipe(
+      tap(() => this.clearCache())
+    );
   }
 }
