@@ -208,7 +208,10 @@
               <div class="admin-prod-details">
                 <div class="badge-cat-sm">{{ p.category }}</div>
                 <h4 class="admin-prod-name">{{ p.name }}</h4>
-                <div class="admin-prod-price">{{ p.price.toLocaleString() }} ج.م</div>
+                <div class="admin-prod-meta-row">
+                  <span class="admin-prod-price">{{ p.price.toLocaleString() }} ج.م</span>
+                  <span class="admin-prod-qty">الكمية: {{ p.quantity !== undefined ? p.quantity : 1 }}</span>
+                </div>
               </div>
               <div class="admin-card-actions">
                 <button class="btn-icon edit-btn" (click)="openEditProduct(p)" title="تعديل">
@@ -505,16 +508,25 @@
                 <option value="Other">Other (أجهزة أخرى)</option>
               </select>
             </div>
+          </div>
 
+          <!-- Numbers 3-Column Row: Price, Old Price, Quantity -->
+          <div class="modal-numbers-grid">
             <div class="form-group">
               <label>السعر (ج.م) *</label>
               <input type="number" [(ngModel)]="editingProduct.price" class="cyber-input" placeholder="0" />
             </div>
 
             <div class="form-group">
-              <label>السعر قبل الخصم (اختياري)</label>
-              <input type="number" [(ngModel)]="editingProduct.oldPrice" class="cyber-input" placeholder="0" />
+              <label>السعر قبل الخصم</label>
+              <input type="number" [(ngModel)]="editingProduct.oldPrice" class="cyber-input" placeholder="اختياري" />
             </div>
+
+            <div class="form-group">
+              <label>الكمية المتوفرة *</label>
+              <input type="number" min="0" [(ngModel)]="editingProduct.quantity" class="cyber-input" placeholder="1" />
+            </div>
+          </div>
 
             <!-- Multi-Image Upload Section -->
             <div class="form-group full-width">
@@ -589,7 +601,6 @@
               </label>
             </div>
           </div>
-        </div>
 
         <!-- Fixed Footer: Always visible on all screen sizes -->
         <div class="modal-actions-footer">

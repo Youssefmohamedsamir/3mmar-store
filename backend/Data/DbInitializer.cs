@@ -9,10 +9,19 @@ public static class DbInitializer
     {
         await context.Database.EnsureCreatedAsync();
 
-        // Safe column check for ImagesJson in SQLite
+        // Safe column check for ImagesJson & Quantity in SQLite
         try
         {
             await context.Database.ExecuteSqlRawAsync("ALTER TABLE Products ADD COLUMN ImagesJson TEXT DEFAULT '';");
+        }
+        catch
+        {
+            // Column already exists
+        }
+
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE Products ADD COLUMN Quantity INTEGER DEFAULT 1;");
         }
         catch
         {

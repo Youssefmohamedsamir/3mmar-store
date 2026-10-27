@@ -8,6 +8,7 @@ public class Product
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public decimal? OldPrice { get; set; }
+    public int Quantity { get; set; } = 1;
     public string ImageUrl { get; set; } = string.Empty;
     public string ImagesJson { get; set; } = string.Empty;
     public bool IsAvailable { get; set; } = true;

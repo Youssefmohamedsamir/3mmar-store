@@ -54,6 +54,7 @@ public class ProductsController : ControllerBase
             p.Description,
             p.Price,
             p.OldPrice,
+            p.Quantity,
             p.ImageUrl,
             ParseImages(p.ImageUrl, p.ImagesJson),
             p.IsAvailable,
@@ -76,6 +77,7 @@ public class ProductsController : ControllerBase
             p.Description,
             p.Price,
             p.OldPrice,
+            p.Quantity,
             p.ImageUrl,
             ParseImages(p.ImageUrl, p.ImagesJson),
             p.IsAvailable,
@@ -107,6 +109,7 @@ public class ProductsController : ControllerBase
             Description = req.Description.Trim(),
             Price = req.Price,
             OldPrice = req.OldPrice,
+            Quantity = req.Quantity.HasValue && req.Quantity.Value >= 0 ? req.Quantity.Value : 1,
             ImageUrl = primaryImg,
             ImagesJson = System.Text.Json.JsonSerializer.Serialize(imagesList),
             IsAvailable = req.IsAvailable,
@@ -124,6 +127,7 @@ public class ProductsController : ControllerBase
             product.Description,
             product.Price,
             product.OldPrice,
+            product.Quantity,
             product.ImageUrl,
             ParseImages(product.ImageUrl, product.ImagesJson),
             product.IsAvailable,
@@ -156,6 +160,10 @@ public class ProductsController : ControllerBase
         product.Description = req.Description.Trim();
         product.Price = req.Price;
         product.OldPrice = req.OldPrice;
+        if (req.Quantity.HasValue)
+        {
+            product.Quantity = req.Quantity.Value;
+        }
         product.ImageUrl = primaryImg;
         product.ImagesJson = System.Text.Json.JsonSerializer.Serialize(imagesList);
         product.IsAvailable = req.IsAvailable;
@@ -170,6 +178,7 @@ public class ProductsController : ControllerBase
             product.Description,
             product.Price,
             product.OldPrice,
+            product.Quantity,
             product.ImageUrl,
             ParseImages(product.ImageUrl, product.ImagesJson),
             product.IsAvailable,

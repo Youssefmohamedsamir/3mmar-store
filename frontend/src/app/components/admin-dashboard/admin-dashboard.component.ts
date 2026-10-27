@@ -300,6 +300,7 @@ export class AdminDashboardComponent implements OnInit {
       description: '',
       price: 0,
       oldPrice: undefined,
+      quantity: 1,
       imageUrl: '',
       images: [],
       isAvailable: true,
@@ -309,7 +310,10 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   openEditProduct(p: Product): void {
-    this.editingProduct = { ...p };
+    this.editingProduct = {
+      ...p,
+      quantity: p.quantity !== undefined ? p.quantity : 1
+    };
     this.productImages = p.images && p.images.length > 0
       ? [...p.images]
       : (p.imageUrl ? [p.imageUrl] : []);

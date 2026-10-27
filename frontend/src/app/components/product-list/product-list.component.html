@@ -102,9 +102,14 @@
               <p class="product-desc">{{ product.description }}</p>
 
               <div class="price-row">
-                <span class="current-price">{{ formatPrice(product.price) }} <small>ج.م</small></span>
-                @if (product.oldPrice) {
-                  <span class="old-price">{{ formatPrice(product.oldPrice) }} ج.م</span>
+                <div class="price-box">
+                  <span class="current-price">{{ formatPrice(product.price) }} <small>ج.م</small></span>
+                  @if (product.oldPrice) {
+                    <span class="old-price">{{ formatPrice(product.oldPrice) }} ج.م</span>
+                  }
+                </div>
+                @if (product.quantity !== undefined && product.quantity > 0) {
+                  <span class="stock-qty-pill">المتوفر: {{ product.quantity }}</span>
                 }
               </div>
 
