@@ -198,21 +198,101 @@
 
 .error-alert {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
-  font-size: 0.85rem;
-  padding: 10px 14px;
-  border-radius: 10px;
-  margin-bottom: 16px;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.18) 0%, rgba(185, 28, 28, 0.22) 100%);
+  border: 1.5px solid #ef4444;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25), inset 0 0 15px rgba(239, 68, 68, 0.08);
+  color: #fee2e2;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  text-align: right;
 
-  svg {
-    width: 18px;
-    height: 18px;
+  .alert-icon-box {
     flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.25);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ef4444;
+
+    .alert-svg {
+      width: 19px;
+      height: 19px;
+    }
   }
+
+  .alert-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .alert-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #ff6b6b;
+    display: block;
+    letter-spacing: -0.2px;
+  }
+
+  .alert-text {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #fca5a5;
+    margin: 0;
+  }
+
+  .btn-switch-register {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 7px 14px;
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    transition: all 0.2s ease;
+
+    .switch-arrow {
+      width: 15px;
+      height: 15px;
+      transform: scaleX(-1); // Match RTL direction
+    }
+
+    &:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.6);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+@keyframes shakeAlert {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shakeAlert 0.45s ease-in-out;
 }
 
 /* Form */

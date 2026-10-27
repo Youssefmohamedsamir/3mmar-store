@@ -19,6 +19,8 @@ export class AuthModalComponent {
 
   mode: 'login' | 'register' = 'login';
   errorMessage = '';
+  errorTitle = '';
+  showRegisterSwitch = false;
   loading = false;
 
   // Form fields
@@ -33,17 +35,29 @@ export class AuthModalComponent {
 
   onClose(): void {
     this.errorMessage = '';
+    this.errorTitle = '';
+    this.showRegisterSwitch = false;
+    this.loading = false;
     this.close.emit();
   }
 
   setMode(m: 'login' | 'register'): void {
     this.mode = m;
     this.errorMessage = '';
+    this.errorTitle = '';
+    this.showRegisterSwitch = false;
+  }
+
+  switchToRegister(): void {
+    this.mode = 'register';
+    this.errorMessage = '';
+    this.errorTitle = '';
+    this.showRegisterSwitch = false;
   }
 
   private getFriendlyErrorMessage(err: any, defaultMsg: string): string {
     if (err.name === 'TimeoutError' || err.status === 0) {
-      return 'تعذر الاتصال بسيرفر الباك إند، تأكد من تشغيل الباك إند (dotnet run على المنفذ 5000)';
+      return 'تعذر الاتصال بسيرفر المتجر، يرجى التحقق من اتصال الإنترنت أو إعادة المحاولة بعد لحظات.';
     }
     return err.error?.message || defaultMsg;
   }
@@ -51,6 +65,8 @@ export class AuthModalComponent {
   handleSocialLogin(provider: 'Google' | 'Facebook'): void {
     this.loading = true;
     this.errorMessage = '';
+    this.errorTitle = '';
+    this.showRegisterSwitch = false;
 
     const randomSuffix = Math.floor(Math.random() * 899999 + 100000);
     const userEmail = this.email?.trim() || `${provider.toLowerCase()}.user_${randomSuffix}@gmail.com`;
@@ -71,22 +87,35 @@ export class AuthModalComponent {
       },
       error: (err) => {
         this.loading = false;
+        this.errorTitle = 'تعذر الدخول';
         this.errorMessage = this.getFriendlyErrorMessage(err, 'تعذر تسجيل الدخول بواسطة ' + provider);
       }
     });
   }
 
   submitLocal(): void {
-    if (!this.email || !this.password) {
-      this.errorMessage = 'يرجى إدخال البريد الإلكتروني وكلمة المرور';
+    this.errorMessage = '';
+    this.errorTitle = '';
+    this.showRegisterSwitch = false;
+
+    if (!this.email || !this.email.trim()) {
+      this.errorTitle = 'تنبيه: البريد مطلوب';
+      this.errorMessage = 'يرجى إدخال البريد الإلكتروني للمتابعة.';
+      this.loading = false;
+      return;
+    }
+
+    if (!this.password || !this.password.trim()) {
+      this.errorTitle = 'تنبيه: كلمة المرور مطلوبة';
+      this.errorMessage = 'يرجى إدخال كلمة المرور للمتابعة.';
+      this.loading = false;
       return;
     }
 
     this.loading = true;
-    this.errorMessage = '';
 
     if (this.mode === 'login') {
-      this.auth.login({ email: this.email, password: this.password }).subscribe({
+      this.auth.login({ email: this.email.trim(), password: this.password }).subscribe({
         next: (res) => {
           this.loading = false;
           this.toast.showDone('Done ✓', `مرحباً بك ${res.fullName}! تم تسجيل الدخول بنجاح`);
@@ -95,16 +124,32 @@ export class AuthModalComponent {
         },
         error: (err) => {
           this.loading = false;
-          this.errorMessage = this.getFriendlyErrorMessage(err, 'البريد أو كلمة المرور غير صحيحة');
+          const errCode = err.error?.code;
+          const backendMsg = err.error?.message || '';
+
+          if (errCode === 'ACCOUNT_NOT_FOUND' || backendMsg.includes('غير مسجل') || backendMsg.includes('ليس له حساب')) {
+            this.errorTitle = 'تنبيه: هذا البريد غير مسجل لدينا!';
+            this.errorMessage = backendMsg || 'هذا البريد الإلكتروني ليس له حساب مسبق في متجرنا. يرجى إنشاء حساب جديد أولاً لتتمكن من الدخول ومتابعة طلباتك.';
+            this.showRegisterSwitch = true;
+          } else if (errCode === 'INVALID_PASSWORD' || backendMsg.includes('كلمة المرور غير صحيحة')) {
+            this.errorTitle = 'خطأ في كلمة المرور';
+            this.errorMessage = backendMsg || 'كلمة المرور غير صحيحة، يرجى التأكد وإعادة المحاولة.';
+            this.showRegisterSwitch = false;
+          } else {
+            this.errorTitle = 'تعذر تسجيل الدخول';
+            this.errorMessage = this.getFriendlyErrorMessage(err, 'البريد أو كلمة المرور غير صحيحة');
+            this.showRegisterSwitch = false;
+          }
         }
       });
     } else {
-      if (!this.fullName) {
-        this.errorMessage = 'يرجى إدخال الاسم بالكامل';
+      if (!this.fullName || !this.fullName.trim()) {
+        this.errorTitle = 'تنبيه: الاسم مطلوب';
+        this.errorMessage = 'يرجى إدخال الاسم بالكامل لإنشاء الحساب.';
         this.loading = false;
         return;
       }
-      this.auth.register({ fullName: this.fullName, email: this.email, password: this.password }).subscribe({
+      this.auth.register({ fullName: this.fullName.trim(), email: this.email.trim(), password: this.password }).subscribe({
         next: (res) => {
           this.loading = false;
           this.toast.showDone('Done ✓', `أهلاً بك يا ${res.fullName}! تم إنشاء حسابك بنجاح`);
@@ -113,7 +158,8 @@ export class AuthModalComponent {
         },
         error: (err) => {
           this.loading = false;
-          this.errorMessage = this.getFriendlyErrorMessage(err, 'تعذر إنشاء الحساب');
+          this.errorTitle = 'تعذر إنشاء الحساب';
+          this.errorMessage = this.getFriendlyErrorMessage(err, 'تعذر إنشاء الحساب، قد يكون البريد مسجلاً مسبقاً');
         }
       });
     }

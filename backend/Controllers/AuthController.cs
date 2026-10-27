@@ -72,7 +72,16 @@ public class AuthController : ControllerBase
             }
         }
 
-        if (user == null || string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
+        if (user == null)
+        {
+            return BadRequest(new
+            {
+                code = "ACCOUNT_NOT_FOUND",
+                message = "هذا البريد الإلكتروني غير مسجل لدينا! يرجى النقر على تبويب 'إنشاء حساب جديد' لإنشاء حسابك أولاً والتمكن من الدخول ومتابعة طلباتك."
+            });
+        }
+
+        if (string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
         {
             _failedAttempts.AddOrUpdate(rateKey,
                 _ => (1, DateTime.MinValue),
@@ -82,7 +91,11 @@ public class AuthController : ControllerBase
                     var lockUntil = newCount >= 5 ? DateTime.UtcNow.AddMinutes(5) : DateTime.MinValue;
                     return (newCount, lockUntil);
                 });
-            return BadRequest(new { message = "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
+            return BadRequest(new
+            {
+                code = "INVALID_PASSWORD",
+                message = "كلمة المرور غير صحيحة، يرجى التأكد من كتابة كلمة المرور الصحيحة لحسابك."
+            });
         }
 
         // On successful login: reset rate limit tracking
