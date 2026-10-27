@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsSummary, Product, StoreSettings, Offer } from '../../models/models';
@@ -15,8 +15,10 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
   activeTab: 'analytics' | 'products' | 'offers' | 'settings' | 'account' = 'analytics';
+
+  private autoRefreshTimer: any = null;
 
   // Account management fields
   currentPassword = '';
@@ -356,6 +358,23 @@ export class AdminDashboardComponent implements OnInit {
     this.loadProducts();
     this.loadOffers();
     this.loadSettings();
+
+    // Auto-refresh summary data every 10 seconds to instantly display new user registrations
+    this.autoRefreshTimer = setInterval(() => {
+      if (this.activeTab === 'analytics') {
+        this.analyticsService.getSummary().subscribe({
+          next: (data) => {
+            this.summary = data;
+          }
+        });
+      }
+    }, 10000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.autoRefreshTimer) {
+      clearInterval(this.autoRefreshTimer);
+    }
   }
 
   loadSummary(): void {

@@ -186,68 +186,21 @@
           </div>
         </div>
 
-        <!-- Real Sales & Profit History -->
-        <div class="data-table-container glass-panel mt-6">
-          <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>سجل عمليات البيع والأرباح</h3>
-            <button class="btn-simple-action btn-prod" (click)="openRecordSale()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>تسجيل عملية بيع جديدة</span>
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="cyber-table">
-              <thead>
-                <tr>
-                  <th>المنتج</th>
-                  <th>الكمية</th>
-                  <th>سعر البيع</th>
-                  <th>إجمالي البيع</th>
-                  <th>الربح المحقق</th>
-                  <th>العميل</th>
-                  <th>التاريخ</th>
-                  <th>إجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                @if (!summary?.recentSales || summary?.recentSales?.length === 0) {
-                  <tr>
-                    <td colspan="8" style="text-align: center; color: #94a3b8; padding: 24px;">
-                      لم يتم تسجيل أي عمليات بيع بعد. انقر على "تسجيل عملية بيع جديدة" لتوثيق مبيعاتك وحساب أرباحك فوراً.
-                    </td>
-                  </tr>
-                }
-                @for (s of summary?.recentSales; track s.id) {
-                  <tr>
-                    <td class="font-bold">{{ s.productName }}</td>
-                    <td><span class="stock-qty-pill">{{ s.quantitySold }} قطعة</span></td>
-                    <td>{{ formatNumber(s.salePrice) }} ج.م</td>
-                    <td class="text-neon font-bold">{{ formatNumber(s.totalRevenue) }} ج.م</td>
-                    <td style="color: #38bdf8; font-weight: 700;">+{{ formatNumber(s.totalProfit) }} ج.م</td>
-                    <td>{{ s.customerName || (s.customerPhone ? s.customerPhone : 'عميل مباشر') }}</td>
-                    <td>{{ formatDate(s.soldAt) }}</td>
-                    <td>
-                      <button class="btn-delete-img" style="position: static; width: 24px; height: 24px;" (click)="deleteSale(s.id)" title="إلغاء البيع واسترجاع القطع">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         <!-- Clean Real Registered Users -->
         <div class="data-table-container glass-panel mt-6">
-          <div class="table-header">
-            <h3>المستخدمين المسجلين</h3>
+          <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3>المستخدمين المسجلين</h3>
+              <span class="stock-qty-pill text-neon">{{ summary?.recentUsers?.length || 0 }} مستخدم</span>
+            </div>
+            <button class="btn-simple-action" (click)="loadSummary()" [disabled]="loadingSummary" title="تحديث قائمة المستخدمين الآن">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              <span>{{ loadingSummary ? 'جارِ التحديث...' : 'تحديث الآن' }}</span>
+            </button>
           </div>
           <div class="table-responsive">
             <table class="cyber-table">
@@ -261,6 +214,13 @@
                 </tr>
               </thead>
               <tbody>
+                @if (!summary?.recentUsers || summary?.recentUsers?.length === 0) {
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: #94a3b8; padding: 24px;">
+                      لا يوجد مستخدمين مسجلين بعد. عند تسجيل أي عميل سيظهر حسابه فوراً هنا.
+                    </td>
+                  </tr>
+                }
                 @for (u of summary?.recentUsers; track u.id) {
                   <tr>
                     <td class="font-bold">{{ u.fullName }}</td>
@@ -271,7 +231,7 @@
                       </span>
                     </td>
                     <td>
-                      <span class="role-pill" [class.admin]="u.role === 'Admin'">{{ u.role }}</span>
+                      <span class="role-pill" [class.admin]="u.role === 'Admin'">{{ u.role === 'Admin' ? 'مدير' : 'عميل' }}</span>
                     </td>
                     <td>{{ formatDate(u.createdAt) }}</td>
                   </tr>

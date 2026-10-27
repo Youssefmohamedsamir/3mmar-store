@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://localhost:5000");
+builder.WebHost.UseUrls("http://0.0.0.0:5000;http://localhost:5000");
 
 // Add Database Context (Microsoft SQL Server)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
