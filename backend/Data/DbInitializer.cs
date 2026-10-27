@@ -9,6 +9,27 @@ public static class DbInitializer
     {
         await context.Database.EnsureCreatedAsync();
 
+        // Ensure SaleRecords table exists
+        await context.Database.ExecuteSqlRawAsync(@"
+            IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SaleRecords')
+            BEGIN
+                CREATE TABLE SaleRecords (
+                    Id INT IDENTITY(1,1) PRIMARY KEY,
+                    ProductId INT NULL,
+                    ProductName NVARCHAR(255) NOT NULL,
+                    QuantitySold INT NOT NULL DEFAULT 1,
+                    SalePrice DECIMAL(18,2) NOT NULL DEFAULT 0,
+                    CostPrice DECIMAL(18,2) NOT NULL DEFAULT 0,
+                    TotalRevenue DECIMAL(18,2) NOT NULL DEFAULT 0,
+                    TotalProfit DECIMAL(18,2) NOT NULL DEFAULT 0,
+                    CustomerName NVARCHAR(255) NULL,
+                    CustomerPhone NVARCHAR(100) NULL,
+                    Notes NVARCHAR(MAX) NULL,
+                    SoldAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+                );
+            END
+        ");
+
         // Seed Store Settings
         if (!await context.StoreSettings.AnyAsync())
         {

@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<StoreSetting> StoreSettings => Set<StoreSetting>();
     public DbSet<VisitorLog> VisitorLogs => Set<VisitorLog>();
     public DbSet<OrderIntent> OrderIntents => Set<OrderIntent>();
+    public DbSet<SaleRecord> SaleRecords => Set<SaleRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -34,6 +35,22 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Product>()
             .Property(p => p.OldPrice)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<SaleRecord>()
+            .Property(s => s.SalePrice)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<SaleRecord>()
+            .Property(s => s.CostPrice)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<SaleRecord>()
+            .Property(s => s.TotalRevenue)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<SaleRecord>()
+            .Property(s => s.TotalProfit)
             .HasColumnType("decimal(18,2)");
     }
 }

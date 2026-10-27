@@ -54,6 +54,20 @@ export class AdminDashboardComponent implements OnInit {
     isActive: true
   };
 
+  // Sales / Earnings Recording
+  showSaleModal = false;
+  savingSale = false;
+  newSale = {
+    productId: null as number | null,
+    productName: '',
+    quantitySold: 1,
+    salePrice: 0,
+    costPrice: 0,
+    customerName: '',
+    customerPhone: '',
+    notes: ''
+  };
+
   // Settings
   currentSettings: StoreSettings = {
     storeName: '',
@@ -94,7 +108,7 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  private compressImage(file: File, maxWidth = 1000, maxHeight = 1000, quality = 0.82): Promise<string> {
+  private compressImage(file: File, maxWidth = 850, maxHeight = 850, quality = 0.76): Promise<string> {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -425,19 +439,45 @@ export class AdminDashboardComponent implements OnInit {
       images: imagesToSave
     };
 
-    const request$ = this.editingProduct.id
-      ? this.productService.updateProduct(this.editingProduct.id, payload)
+    // OPTIMISTIC UPDATE: update local state & close modal instantly
+    const isEditing = !!this.editingProduct.id;
+    const prevProducts = [...this.products];
+
+    if (isEditing) {
+      this.products = this.products.map(p => p.id === payload.id ? { ...p, ...payload } as Product : p);
+    } else {
+      const tempProduct: Product = {
+        id: Date.now(),
+        name: payload.name || '',
+        category: payload.category || 'IPhone',
+        description: payload.description || '',
+        price: payload.price || 0,
+        oldPrice: payload.oldPrice,
+        quantity: payload.quantity !== undefined ? payload.quantity : 1,
+        imageUrl: primaryImg,
+        images: imagesToSave,
+        isAvailable: payload.isAvailable ?? true,
+        isFeatured: payload.isFeatured ?? false,
+        createdAt: new Date().toISOString()
+      };
+      this.products = [tempProduct, ...this.products];
+    }
+
+    this.showProductModal = false;
+
+    const request$ = isEditing
+      ? this.productService.updateProduct(this.editingProduct.id!, payload)
       : this.productService.createProduct(payload);
 
     request$.subscribe({
       next: () => {
         this.savingProduct = false;
-        this.showProductModal = false;
         this.productImages = [];
         this.loadProducts();
       },
       error: (err) => {
         this.savingProduct = false;
+        this.products = prevProducts;
         console.error('Error saving product:', err);
         if (err.status === 401) {
           alert('انتهت جلسة تسجيل الدخول للأدمن أو تم رفض الصلاحية. يرجى تسجيل الدخول مجدداً بحساب amary212005@gmail.com');
@@ -450,9 +490,16 @@ export class AdminDashboardComponent implements OnInit {
 
   deleteProduct(id: number): void {
     if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+      const prevProducts = [...this.products];
+      // Optimistic delete: disappears immediately in 0ms
+      this.products = this.products.filter(p => p.id !== id);
+
       this.productService.deleteProduct(id).subscribe({
-        next: () => this.loadProducts(),
+        next: () => {
+          this.loadProducts();
+        },
         error: (err) => {
+          this.products = prevProducts;
           console.error(err);
           alert('تعذر حذف المنتج، تأكد من صلاحيات الأدمن');
         }
@@ -500,19 +547,41 @@ export class AdminDashboardComponent implements OnInit {
       images: imagesToSave
     };
 
-    const request$ = this.editingOffer.id
-      ? this.offersService.updateOffer(this.editingOffer.id, payload)
+    // Optimistic update
+    const isEditing = !!this.editingOffer.id;
+    const prevOffers = [...this.offers];
+
+    if (isEditing) {
+      this.offers = this.offers.map(o => o.id === payload.id ? { ...o, ...payload } as Offer : o);
+    } else {
+      const tempOffer: Offer = {
+        id: Date.now(),
+        title: payload.title || '',
+        description: payload.description || '',
+        badgeText: payload.badgeText || 'عرض خاص',
+        imageUrl: primaryImg,
+        images: imagesToSave,
+        actionUrl: payload.actionUrl || '#products',
+        isActive: payload.isActive ?? true
+      };
+      this.offers = [tempOffer, ...this.offers];
+    }
+
+    this.showOfferModal = false;
+
+    const request$ = isEditing
+      ? this.offersService.updateOffer(this.editingOffer.id!, payload)
       : this.offersService.createOffer(payload);
 
     request$.subscribe({
       next: () => {
         this.savingOffer = false;
-        this.showOfferModal = false;
         this.offerImages = [];
         this.loadOffers();
       },
       error: (err) => {
         this.savingOffer = false;
+        this.offers = prevOffers;
         console.error('Error saving offer:', err);
         if (err.status === 401) {
           alert('انتهت جلسة تسجيل الدخول للأدمن. يرجى تسجيل الدخول بحساب amary212005@gmail.com');
@@ -525,11 +594,84 @@ export class AdminDashboardComponent implements OnInit {
 
   deleteOffer(id: number): void {
     if (confirm('هل أنت متأكد من حذف هذا العرض؟')) {
+      const prevOffers = [...this.offers];
+      this.offers = this.offers.filter(o => o.id !== id);
+
       this.offersService.deleteOffer(id).subscribe({
         next: () => this.loadOffers(),
         error: (err) => {
+          this.offers = prevOffers;
           console.error(err);
           alert('تعذر حذف العرض');
+        }
+      });
+    }
+  }
+
+  // Sales / Earnings Recorder Actions
+  openRecordSale(): void {
+    const firstProduct = this.products.length > 0 ? this.products[0] : null;
+    this.newSale = {
+      productId: firstProduct ? firstProduct.id : null,
+      productName: firstProduct ? firstProduct.name : '',
+      quantitySold: 1,
+      salePrice: firstProduct ? firstProduct.price : 0,
+      costPrice: 0,
+      customerName: '',
+      customerPhone: '',
+      notes: ''
+    };
+    this.showSaleModal = true;
+  }
+
+  onSaleProductChange(): void {
+    const selected = this.products.find(p => p.id === Number(this.newSale.productId));
+    if (selected) {
+      this.newSale.productName = selected.name;
+      this.newSale.salePrice = selected.price;
+    }
+  }
+
+  saveSale(): void {
+    if (!this.newSale.productName && !this.newSale.productId) {
+      alert('يرجى تحديد المنتج المباع');
+      return;
+    }
+    if (this.newSale.quantitySold <= 0) {
+      alert('يرجى إدخال كمية صحيحة (1 أو أكثر)');
+      return;
+    }
+    if (this.newSale.salePrice < 0) {
+      alert('يرجى كتابة سعر بيع صحيح');
+      return;
+    }
+
+    this.savingSale = true;
+    this.analyticsService.recordSale(this.newSale).subscribe({
+      next: () => {
+        this.savingSale = false;
+        this.showSaleModal = false;
+        this.loadSummary();
+        this.loadProducts();
+      },
+      error: (err) => {
+        this.savingSale = false;
+        console.error(err);
+        alert('تعذر تسجيل عملية البيع: ' + (err.error?.message || err.message || 'خطأ في الاتصال'));
+      }
+    });
+  }
+
+  deleteSale(id: number): void {
+    if (confirm('هل أنت متأكد من حذف عملية البيع واسترجاع القطع المباعة إلى مخزون المنتج؟')) {
+      this.analyticsService.deleteSale(id).subscribe({
+        next: () => {
+          this.loadSummary();
+          this.loadProducts();
+        },
+        error: (err) => {
+          console.error(err);
+          alert('تعذر حذف عملية البيع');
         }
       });
     }
@@ -549,6 +691,10 @@ export class AdminDashboardComponent implements OnInit {
         this.savingSettings = false;
       }
     });
+  }
+
+  formatNumber(num?: number): string {
+    return (num || 0).toLocaleString();
   }
 
   formatDate(dateStr: string): string {

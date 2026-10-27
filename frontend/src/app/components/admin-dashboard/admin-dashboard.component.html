@@ -84,8 +84,78 @@
     <!-- TAB 1: Analytics -->
     @if (activeTab === 'analytics') {
       <div class="tab-content animate-fade-in">
-        <!-- 4 Centered Metric Cards -->
+        <!-- 7 Centered Metric Cards (Visitors, Users, Products, Orders, Pieces Sold, Revenue, Profit) -->
         <div class="metrics-grid">
+          <!-- 1. Pieces Sold -->
+          <div class="metric-card glass-panel" style="border-color: rgba(0, 230, 118, 0.45);">
+            <div class="metric-icon-box visitor-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">القطع المباعة</span>
+              <span class="metric-value text-neon">{{ summary?.totalPiecesSold || 0 }} <small style="font-size: 0.8rem;">قطعة</small></span>
+            </div>
+          </div>
+
+          <!-- 2. Total Revenue -->
+          <div class="metric-card glass-panel" style="border-color: rgba(56, 189, 248, 0.45);">
+            <div class="metric-icon-box user-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">إجمالي المبيعات</span>
+              <span class="metric-value" style="color: #38bdf8;">{{ formatNumber(summary?.totalRevenue || 0) }} <small style="font-size: 0.8rem;">ج.م</small></span>
+            </div>
+          </div>
+
+          <!-- 3. Total Net Profit -->
+          <div class="metric-card glass-panel" style="border-color: rgba(245, 158, 11, 0.45);">
+            <div class="metric-icon-box order-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">صافي الأرباح المحققة</span>
+              <span class="metric-value" style="color: #f59e0b;">+{{ formatNumber(summary?.totalProfit || 0) }} <small style="font-size: 0.8rem;">ج.م</small></span>
+            </div>
+          </div>
+
+          <!-- 4. Total Products -->
+          <div class="metric-card glass-panel">
+            <div class="metric-icon-box product-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">المنتجات المعروضة</span>
+              <span class="metric-value">{{ summary?.totalProducts || 0 }}</span>
+            </div>
+          </div>
+
+          <!-- 5. Order Intent Clicks -->
+          <div class="metric-card glass-panel">
+            <div class="metric-icon-box order-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">نقرات طلب الشراء</span>
+              <span class="metric-value">{{ summary?.totalOrderClicks || 0 }}</span>
+            </div>
+          </div>
+
+          <!-- 6. Total Visitors -->
           <div class="metric-card glass-panel">
             <div class="metric-icon-box visitor-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -99,6 +169,7 @@
             </div>
           </div>
 
+          <!-- 7. Registered Users -->
           <div class="metric-card glass-panel">
             <div class="metric-icon-box user-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -113,31 +184,63 @@
               <span class="metric-value text-neon">{{ summary?.totalRegisteredUsers || 0 }}</span>
             </div>
           </div>
+        </div>
 
-          <div class="metric-card glass-panel">
-            <div class="metric-icon-box order-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"></polyline>
+        <!-- Real Sales & Profit History -->
+        <div class="data-table-container glass-panel mt-6">
+          <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>سجل عمليات البيع والأرباح</h3>
+            <button class="btn-simple-action btn-prod" (click)="openRecordSale()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
-            </div>
-            <div class="metric-info">
-              <span class="metric-label">نقرات طلب الشراء</span>
-              <span class="metric-value">{{ summary?.totalOrderClicks || 0 }}</span>
-            </div>
+              <span>تسجيل عملية بيع جديدة</span>
+            </button>
           </div>
-
-          <div class="metric-card glass-panel">
-            <div class="metric-icon-box product-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                <line x1="8" y1="21" x2="16" y2="21"></line>
-                <line x1="12" y1="17" x2="12" y2="21"></line>
-              </svg>
-            </div>
-            <div class="metric-info">
-              <span class="metric-label">المنتجات المعروضة</span>
-              <span class="metric-value">{{ summary?.totalProducts || 0 }}</span>
-            </div>
+          <div class="table-responsive">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>الكمية</th>
+                  <th>سعر البيع</th>
+                  <th>إجمالي البيع</th>
+                  <th>الربح المحقق</th>
+                  <th>العميل</th>
+                  <th>التاريخ</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (!summary?.recentSales || summary?.recentSales?.length === 0) {
+                  <tr>
+                    <td colspan="8" style="text-align: center; color: #94a3b8; padding: 24px;">
+                      لم يتم تسجيل أي عمليات بيع بعد. انقر على "تسجيل عملية بيع جديدة" لتوثيق مبيعاتك وحساب أرباحك فوراً.
+                    </td>
+                  </tr>
+                }
+                @for (s of summary?.recentSales; track s.id) {
+                  <tr>
+                    <td class="font-bold">{{ s.productName }}</td>
+                    <td><span class="stock-qty-pill">{{ s.quantitySold }} قطعة</span></td>
+                    <td>{{ formatNumber(s.salePrice) }} ج.م</td>
+                    <td class="text-neon font-bold">{{ formatNumber(s.totalRevenue) }} ج.م</td>
+                    <td style="color: #38bdf8; font-weight: 700;">+{{ formatNumber(s.totalProfit) }} ج.م</td>
+                    <td>{{ s.customerName || (s.customerPhone ? s.customerPhone : 'عميل مباشر') }}</td>
+                    <td>{{ formatDate(s.soldAt) }}</td>
+                    <td>
+                      <button class="btn-delete-img" style="position: static; width: 24px; height: 24px;" (click)="deleteSale(s.id)" title="إلغاء البيع واسترجاع القطع">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -767,6 +870,97 @@
             <span>{{ savingOffer ? 'جاري الحفظ...' : (editingOffer.id ? 'حفظ التعديلات' : 'إضافة العرض الآن') }}</span>
           </button>
           <button class="btn-secondary" (click)="closeOfferModal()" [disabled]="savingOffer">إلغاء</button>
+        </div>
+      </div>
+    </div>
+  }
+  <!-- MODAL 3: Record Sale & Calculate Profits -->
+  @if (showSaleModal) {
+    <div class="modal-backdrop animate-fade-in" (click)="showSaleModal = false">
+      <div class="modal-box glass-panel" (click)="$event.stopPropagation()" style="max-width: 540px;">
+        <!-- Header -->
+        <div class="modal-header-row">
+          <div class="modal-header-title-box">
+            <h3 class="modal-header-title">تسجيل عملية بيع جديدة</h3>
+            <span class="modal-header-sub">توثيق البيع، خصم الكمية من المخزون، واحتساب الأرباح تلقائياً</span>
+          </div>
+          <button class="btn-close-modal" (click)="showSaleModal = false" title="إغلاق">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body-scrollable">
+          <div class="form-group full-width">
+            <label>اختر المنتج المباع *</label>
+            <select [(ngModel)]="newSale.productId" (change)="onSaleProductChange()" class="cyber-input">
+              @for (p of products; track p.id) {
+                <option [value]="p.id">{{ p.name }} (المتوفر: {{ p.quantity || 0 }}) - {{ formatNumber(p.price) }} ج.م</option>
+              }
+              <option [value]="null">منتج مخصص آخر...</option>
+            </select>
+          </div>
+
+          @if (!newSale.productId) {
+            <div class="form-group full-width">
+              <label>اسم المنتج المخصص *</label>
+              <input type="text" [(ngModel)]="newSale.productName" class="cyber-input" placeholder="مثال: شاحن أنكر 20W" />
+            </div>
+          }
+
+          <div class="modal-numbers-grid">
+            <div class="form-group">
+              <label>الكمية المباعة (قطعة) *</label>
+              <input type="number" min="1" [(ngModel)]="newSale.quantitySold" class="cyber-input highlight-input" placeholder="1" />
+            </div>
+
+            <div class="form-group">
+              <label>سعر البيع للقطعة (ج.م) *</label>
+              <input type="number" min="0" [(ngModel)]="newSale.salePrice" class="cyber-input highlight-input" placeholder="0" />
+            </div>
+
+            <div class="form-group">
+              <label>سعر التكلفة (ج.م)</label>
+              <input type="number" min="0" [(ngModel)]="newSale.costPrice" class="cyber-input" placeholder="اختياري" />
+            </div>
+          </div>
+
+          <!-- Real-Time Profit Calculation Banner -->
+          <div class="modal-section-banner">
+            <span class="step-num-pill">$</span>
+            <span class="step-title-text">
+              إجمالي البيع: {{ formatNumber(newSale.quantitySold * newSale.salePrice) }} ج.م |
+              صافي الربح: {{ formatNumber(newSale.quantitySold * (newSale.salePrice - (newSale.costPrice || 0))) }} ج.م
+            </span>
+          </div>
+
+          <div class="modal-form-grid">
+            <div class="form-group">
+              <label>اسم العميل (اختياري)</label>
+              <input type="text" [(ngModel)]="newSale.customerName" class="cyber-input" placeholder="اسم المشتري" />
+            </div>
+
+            <div class="form-group">
+              <label>رقم هاتف العميل (اختياري)</label>
+              <input type="text" [(ngModel)]="newSale.customerPhone" class="cyber-input" placeholder="01xxxxxxxxx" />
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label>ملاحظات البيع (اختياري)</label>
+            <input type="text" [(ngModel)]="newSale.notes" class="cyber-input" placeholder="مثال: تم الاستلام كاش / مع ضمان تجربة" />
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-actions-footer">
+          <button class="btn-primary" (click)="saveSale()" [disabled]="savingSale">
+            <span>{{ savingSale ? 'جاري التسجيل...' : 'تسجيل البيع واحتساب الأرباح' }}</span>
+          </button>
+          <button class="btn-secondary" (click)="showSaleModal = false" [disabled]="savingSale">إلغاء</button>
         </div>
       </div>
     </div>

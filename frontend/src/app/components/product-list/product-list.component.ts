@@ -23,13 +23,79 @@ export class ProductListComponent implements OnInit, OnChanges {
   loading = false;
   searchQuery = '';
   activeImages: Map<number, string> = new Map();
+  selectedProduct: Product | null = null;
+  modalActiveImage: string = '';
+
+  getImagesList(product: Product): string[] {
+    if (product.images && product.images.length > 0) {
+      return product.images;
+    }
+    return [product.imageUrl || 'logo.png'];
+  }
 
   getActiveImage(product: Product): string {
     return this.activeImages.get(product.id) || product.imageUrl || 'logo.png';
   }
 
-  selectImage(product: Product, img: string): void {
+  getCurrentImageIndex(product: Product): number {
+    const list = this.getImagesList(product);
+    const current = this.getActiveImage(product);
+    const idx = list.indexOf(current);
+    return idx >= 0 ? idx : 0;
+  }
+
+  selectImage(product: Product, img: string, event?: Event): void {
+    if (event) event.stopPropagation();
     this.activeImages.set(product.id, img);
+  }
+
+  nextImage(product: Product, event?: Event): void {
+    if (event) event.stopPropagation();
+    const list = this.getImagesList(product);
+    if (list.length <= 1) return;
+    const currentIdx = this.getCurrentImageIndex(product);
+    const nextIdx = (currentIdx + 1) % list.length;
+    this.selectImage(product, list[nextIdx]);
+  }
+
+  prevImage(product: Product, event?: Event): void {
+    if (event) event.stopPropagation();
+    const list = this.getImagesList(product);
+    if (list.length <= 1) return;
+    const currentIdx = this.getCurrentImageIndex(product);
+    const prevIdx = (currentIdx - 1 + list.length) % list.length;
+    this.selectImage(product, list[prevIdx]);
+  }
+
+  openProductDetails(product: Product): void {
+    this.selectedProduct = product;
+    this.modalActiveImage = this.getActiveImage(product);
+  }
+
+  closeProductDetails(): void {
+    this.selectedProduct = null;
+  }
+
+  selectModalImage(img: string): void {
+    this.modalActiveImage = img;
+  }
+
+  nextModalImage(): void {
+    if (!this.selectedProduct) return;
+    const list = this.getImagesList(this.selectedProduct);
+    if (list.length <= 1) return;
+    const currentIdx = list.indexOf(this.modalActiveImage);
+    const nextIdx = (currentIdx + 1) % list.length;
+    this.modalActiveImage = list[nextIdx];
+  }
+
+  prevModalImage(): void {
+    if (!this.selectedProduct) return;
+    const list = this.getImagesList(this.selectedProduct);
+    if (list.length <= 1) return;
+    const currentIdx = list.indexOf(this.modalActiveImage);
+    const prevIdx = (currentIdx - 1 + list.length) % list.length;
+    this.modalActiveImage = list[prevIdx];
   }
 
   constructor(

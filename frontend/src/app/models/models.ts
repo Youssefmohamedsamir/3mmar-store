@@ -54,6 +54,21 @@ export interface StoreSettings {
   address: string;
 }
 
+export interface SaleRecord {
+  id: number;
+  productId?: number;
+  productName: string;
+  quantitySold: number;
+  salePrice: number;
+  costPrice: number;
+  totalRevenue: number;
+  totalProfit: number;
+  customerName?: string;
+  customerPhone?: string;
+  notes?: string;
+  soldAt: string;
+}
+
 export interface AnalyticsSummary {
   totalVisitors: number;
   totalRegisteredUsers: number;
@@ -61,6 +76,9 @@ export interface AnalyticsSummary {
   totalOrderClicks: number;
   whatsAppClicks: number;
   phoneCallClicks: number;
+  totalPiecesSold: number;
+  totalRevenue: number;
+  totalProfit: number;
   recentIntents: {
     id: number;
     productName: string;
@@ -79,4 +97,5 @@ export interface AnalyticsSummary {
     role: string;
     createdAt: string;
   }[];
+  recentSales?: SaleRecord[];
 }

@@ -29,8 +29,38 @@ public record AnalyticsSummaryDto(
     int TotalOrderClicks,
     int WhatsAppClicks,
     int PhoneCallClicks,
+    int TotalPiecesSold,
+    decimal TotalRevenue,
+    decimal TotalProfit,
     List<RecentOrderIntentDto> RecentIntents,
-    List<RegisteredUserDto> RecentUsers
+    List<RegisteredUserDto> RecentUsers,
+    List<SaleRecordDto> RecentSales
+);
+
+public record SaleRecordDto(
+    int Id,
+    int? ProductId,
+    string ProductName,
+    int QuantitySold,
+    decimal SalePrice,
+    decimal CostPrice,
+    decimal TotalRevenue,
+    decimal TotalProfit,
+    string? CustomerName,
+    string? CustomerPhone,
+    string? Notes,
+    DateTime SoldAt
+);
+
+public record RecordSaleRequest(
+    int? ProductId,
+    string? ProductName,
+    int QuantitySold,
+    decimal SalePrice,
+    decimal CostPrice,
+    string? CustomerName,
+    string? CustomerPhone,
+    string? Notes
 );
 
 public record RecentOrderIntentDto(

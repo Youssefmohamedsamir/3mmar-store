@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AnalyticsSummary } from '../models/models';
+import { AnalyticsSummary, SaleRecord } from '../models/models';
 import { AuthService } from './auth.service';
 import { getApiBaseUrl } from './api-config';
 
@@ -33,6 +33,18 @@ export class AnalyticsService {
 
   getSummary(): Observable<AnalyticsSummary> {
     return this.http.get<AnalyticsSummary>(`${this.apiUrl}/summary`, {
+      headers: { Authorization: `Bearer ${this.auth.getToken()}` }
+    });
+  }
+
+  recordSale(sale: any): Observable<SaleRecord> {
+    return this.http.post<SaleRecord>(`${this.apiUrl}/sales`, sale, {
+      headers: { Authorization: `Bearer ${this.auth.getToken()}` }
+    });
+  }
+
+  deleteSale(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/sales/${id}`, {
       headers: { Authorization: `Bearer ${this.auth.getToken()}` }
     });
   }
