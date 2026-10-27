@@ -17,6 +17,7 @@ import { AnalyticsService } from '../../services/analytics.service';
 export class ProductListComponent implements OnInit, OnChanges {
   @Input() selectedCategory: string = 'IPhone';
   @Output() requireAuth = new EventEmitter<{ productId: number; type: 'WhatsApp' | 'Phone' }>();
+  @Output() openAdmin = new EventEmitter<void>();
 
   products: Product[] = [];
   loading = false;
@@ -62,7 +63,6 @@ export class ProductListComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Customer is logged in, proceed with record & order
     this.analytics.recordOrderIntent(product.id, type).subscribe();
 
     const currentSettings = this.settings.settings();

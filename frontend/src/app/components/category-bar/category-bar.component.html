@@ -1,9 +1,9 @@
 <section id="categories" class="categories-section">
   <div class="container-custom">
-    <!-- Section Header -->
+    <!-- Header -->
     <div class="section-title-wrapper">
       <div class="badge-neon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"></rect>
           <rect x="14" y="3" width="7" height="7"></rect>
           <rect x="14" y="14" width="7" height="7"></rect>
@@ -11,107 +11,74 @@
         </svg>
         <span>الأقسام الرئيسية</span>
       </div>
-      <h2 class="section-heading">اختر القسم الذي تبحث عنه</h2>
-      <p class="section-subtext">تصفح التشكيلة الكاملة من الأجهزة والإكسسوارات المتاحة فوراً للشراء</p>
+      <h2 class="section-heading">اختر القسم للتصفح</h2>
+      <p class="section-subtext">تصفح المنتجات المتوفرة فوراً في المتجر</p>
     </div>
 
     <!-- The 4 Centered Category Cards -->
     <div class="categories-center-container">
       <div class="categories-grid">
-        <!-- 1. IPhone Card -->
+        <!-- 1. IPhone -->
         <div class="category-card" [class.active]="selectedCategory === 'IPhone'" (click)="selectCategory('IPhone')">
-          <div class="card-glow-bg"></div>
-          <div class="card-content">
-            <div class="category-icon-wrapper iphone-glow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="cat-svg">
-                <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3"></line>
-                <line x1="10" y1="5" x2="14" y2="5"></line>
-              </svg>
-            </div>
-            <div class="card-meta">
-              <span class="card-badge">Apple Official</span>
-              <h3 class="card-title">iPhone</h3>
-              <p class="card-desc">أجهزة آيفون الأصلية</p>
-            </div>
-            <div class="active-indicator">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
+          <div class="card-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <div class="card-text">
+            <span class="card-tag">Apple</span>
+            <h3 class="card-name">iPhone</h3>
+            <p class="card-summary">أجهزة آيفون الأصلية</p>
           </div>
         </div>
 
-        <!-- 2. Android Card -->
+        <!-- 2. Android -->
         <div class="category-card" [class.active]="selectedCategory === 'Android'" (click)="selectCategory('Android')">
-          <div class="card-glow-bg"></div>
-          <div class="card-content">
-            <div class="category-icon-wrapper android-glow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="cat-svg">
-                <rect x="4" y="6" width="16" height="14" rx="2"></rect>
-                <line x1="8" y1="2" x2="10" y2="6"></line>
-                <line x1="16" y1="2" x2="14" y2="6"></line>
-                <circle cx="9" cy="11" r="1.5" fill="currentColor"></circle>
-                <circle cx="15" cy="11" r="1.5" fill="currentColor"></circle>
-              </svg>
-            </div>
-            <div class="card-meta">
-              <span class="card-badge">Flagship Power</span>
-              <h3 class="card-title">Android</h3>
-              <p class="card-desc">أجهزة أندرويد المتطورة</p>
-            </div>
-            <div class="active-indicator">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
+          <div class="card-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="6" width="16" height="14" rx="2"></rect>
+              <line x1="8" y1="2" x2="10" y2="6"></line>
+              <line x1="16" y1="2" x2="14" y2="6"></line>
+              <circle cx="9" cy="11" r="1.2" fill="currentColor"></circle>
+              <circle cx="15" cy="11" r="1.2" fill="currentColor"></circle>
+            </svg>
+          </div>
+          <div class="card-text">
+            <span class="card-tag">Android</span>
+            <h3 class="card-name">Android</h3>
+            <p class="card-summary">هواتف سامسونج وشاومي</p>
           </div>
         </div>
 
-        <!-- 3. Accessories Card -->
+        <!-- 3. Accessories -->
         <div class="category-card" [class.active]="selectedCategory === 'Accessories'" (click)="selectCategory('Accessories')">
-          <div class="card-glow-bg"></div>
-          <div class="card-content">
-            <div class="category-icon-wrapper accessories-glow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="cat-svg">
-                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
-              </svg>
-            </div>
-            <div class="card-meta">
-              <span class="card-badge">Original Gear</span>
-              <h3 class="card-title">Accessories</h3>
-              <p class="card-desc">سماعات وشواحن وكفرات</p>
-            </div>
-            <div class="active-indicator">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
+          <div class="card-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+              <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+            </svg>
+          </div>
+          <div class="card-text">
+            <span class="card-tag">Gear</span>
+            <h3 class="card-name">Accessories</h3>
+            <p class="card-summary">سماعات وشواحن وكفرات</p>
           </div>
         </div>
 
-        <!-- 4. Other Card -->
+        <!-- 4. Other -->
         <div class="category-card" [class.active]="selectedCategory === 'Other'" (click)="selectCategory('Other')">
-          <div class="card-glow-bg"></div>
-          <div class="card-content">
-            <div class="category-icon-wrapper other-glow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="cat-svg">
-                <circle cx="12" cy="12" r="7"></circle>
-                <polyline points="12 9 12 12 13.5 13.5"></polyline>
-                <path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"></path>
-              </svg>
-            </div>
-            <div class="card-meta">
-              <span class="card-badge">Smart Gadgets</span>
-              <h3 class="card-title">Other</h3>
-              <p class="card-desc">ساعات، تابلت وملحقات</p>
-            </div>
-            <div class="active-indicator">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
+          <div class="card-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="7"></circle>
+              <polyline points="12 9 12 12 13.5 13.5"></polyline>
+              <path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"></path>
+            </svg>
+          </div>
+          <div class="card-text">
+            <span class="card-tag">Smart</span>
+            <h3 class="card-name">Other</h3>
+            <p class="card-summary">ساعات وتابلت وملحقات</p>
           </div>
         </div>
       </div>

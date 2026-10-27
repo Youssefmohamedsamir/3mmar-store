@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="section-title-wrapper">
       <div class="badge-neon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 12 20 22 4 22 4 12"></polyline>
           <rect x="2" y="7" width="20" height="5"></rect>
           <line x1="12" y1="22" x2="12" y2="7"></line>
@@ -11,33 +11,45 @@
         <span>العروض والخصومات</span>
       </div>
       <h2 class="section-heading">أقوى الصفقات الحصرية</h2>
-      <p class="section-subtext">استفد من باقات الهدايا المجانية والخصومات المحدودة على أحدث الهواتف والإكسسوارات</p>
+      <p class="section-subtext">عروض وخصومات حصرية محدودة من متجر عمار</p>
     </div>
 
-    <!-- Offers Grid -->
-    <div class="offers-grid">
-      @for (offer of offers; track offer.id) {
-        <div class="offer-card glass-panel">
-          @if (offer.imageUrl) {
-            <div class="offer-image-box">
-              <img [src]="offer.imageUrl" [alt]="offer.title" class="offer-img" />
-              <div class="offer-overlay"></div>
+    <!-- Empty State if no offers (Clean & Simple) -->
+    @if (offers.length === 0 && !loading) {
+      <div class="empty-offers-box glass-panel">
+        <div class="empty-dot"></div>
+        <p>لا توجد عروض ترويجية نشطة حالياً. ترقبوا باقات الخصم والهدايا قريباً!</p>
+      </div>
+    }
+
+    <!-- Offers Grid: Scaled down, compact, perfectly proportioned -->
+    @if (offers.length > 0) {
+      <div class="offers-grid">
+        @for (offer of offers; track offer.id) {
+          <div class="offer-card glass-panel">
+            @if (offer.imageUrl) {
+              <div class="offer-image-box">
+                <img [src]="offer.imageUrl" [alt]="offer.title" class="offer-img" />
+              </div>
+            }
+            <div class="offer-content">
+              <span class="offer-tag">{{ offer.badgeText }}</span>
+              <h3 class="offer-title">{{ offer.title }}</h3>
+              <p class="offer-desc">{{ offer.description }}</p>
+              
+              <div class="offer-footer">
+                <button class="btn-primary offer-btn" (click)="scrollToProducts()">
+                  <span>تصفح العرض</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
             </div>
-          }
-          <div class="offer-content">
-            <span class="offer-badge">{{ offer.badgeText }}</span>
-            <h3 class="offer-title">{{ offer.title }}</h3>
-            <p class="offer-desc">{{ offer.description }}</p>
-            <button class="btn-primary offer-cta" (click)="scrollToProducts()">
-              <span>تصفح العرض واطلب الآن</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    }
   </div>
 </section>

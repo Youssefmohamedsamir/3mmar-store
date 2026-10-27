@@ -24,6 +24,7 @@
       <app-product-list
         [selectedCategory]="selectedCategory"
         (requireAuth)="handleRequireAuth($event)"
+        (openAdmin)="handleNavigate('admin')"
       ></app-product-list>
 
       <!-- 4. Special Offers Section -->
