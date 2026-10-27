@@ -8,8 +8,8 @@
           <div class="logo-glow-ring"></div>
         </div>
         <div class="brand-text">
-          <span class="store-title">3mmar_Store</span>
-          <span class="store-subtitle">متجر عمار للهواتف</span>
+          <span class="store-title">3mmar Store</span>
+          <span class="store-subtitle">مدينة السادات</span>
         </div>
       </div>
 
@@ -58,8 +58,15 @@
         }
       </nav>
 
-      <!-- Action Area: Animated Login Button & User State -->
+      <!-- Action Area: App Download & Animated Login Button & User State -->
       <div class="actions-area">
+        <button class="btn-pwa-nav desktop-only" (click)="pwa.installApp()" title="تنزيل التطبيق للآيفون والأندرويد">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+            <path d="M12 7v6m-3-3l3 3 3-3"></path>
+          </svg>
+          <span>تنزيل التطبيق</span>
+        </button>
         @if (auth.isLoggedIn()) {
           <div class="user-pill">
             <div class="user-avatar-badge">
@@ -112,6 +119,7 @@
         <button class="mobile-link" (click)="goTo('categories')">المنتجات</button>
         <button class="mobile-link" (click)="goTo('offers')">العروض</button>
         <button class="mobile-link" (click)="goTo('media')">الميديا</button>
+        <button class="mobile-link pwa-highlight" (click)="pwa.installApp()">تنزيل التطبيق للآيفون والأندرويد</button>
         @if (auth.isAdmin()) {
           <button class="mobile-link admin-highlight" (click)="goTo('admin')">لوحة الإدارة</button>
         }

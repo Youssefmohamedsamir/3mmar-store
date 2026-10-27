@@ -66,6 +66,18 @@
           </svg>
           <span>الأرقام والسوشيال</span>
         </button>
+
+        <button
+          class="admin-tab-btn"
+          [class.active]="activeTab === 'account'"
+          (click)="activeTab = 'account'"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>حساب الأدمن</span>
+        </button>
       </div>
     </div>
 
@@ -308,18 +320,18 @@
               <label>رقم الواتساب (لإرسال الطلبات)</label>
               <input
                 type="text"
-                placeholder="201000000000 (بدون مسافات أو إشارة +)"
+                placeholder="01044858440"
                 [(ngModel)]="currentSettings.whatsApp"
                 class="cyber-input"
               />
-              <span class="field-hint">مثال: 201012345678 - سيتم فتح شات الواتساب مع العميل مباشرة عليه</span>
+              <span class="field-hint">مثال: 01044858440 - سيتم فتح شات الواتساب مع العميل مباشرة عليه</span>
             </div>
 
             <div class="form-group">
               <label>رقم الهاتف المباشر (للاتصال)</label>
               <input
                 type="text"
-                placeholder="+201000000000"
+                placeholder="01044858440"
                 [(ngModel)]="currentSettings.phone"
                 class="cyber-input"
               />
@@ -390,6 +402,7 @@
             <label>عنوان ومقر المتجر</label>
             <input
               type="text"
+              placeholder="مدينة السادات"
               [(ngModel)]="currentSettings.address"
               class="cyber-input"
             />
@@ -409,6 +422,111 @@
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
                 <span>تم تحديث الإعدادات والأرقام والروابط بنجاح!</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- TAB 5: Admin Account Security Management -->
+    @if (activeTab === 'account') {
+      <div class="tab-content animate-fade-in">
+        <div class="settings-card glass-panel">
+          <div class="settings-card-header">
+            <div>
+              <h3>إدارة وأمان حساب الأدمن الرئيسي</h3>
+              <p>خاص بالمدير فقط لتغيير البريد الإلكتروني وكلمة المرور بأعلى معايير الأمان وتشفير BCrypt</p>
+            </div>
+            <div class="badge-role-admin">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>حساب المدير الموثق</span>
+            </div>
+          </div>
+
+          <div class="account-current-badge">
+            <span class="label">البريد الإلكتروني الحالي:</span>
+            <span class="value">{{ auth.currentUser()?.email || 'amary212005@gmail.com' }}</span>
+          </div>
+
+          <div class="form-section-title mt-6">
+            <h3>تغيير بيانات الدخول</h3>
+            <p>يجب إدخال كلمة المرور الحالية لتأكيد أي تغييرات على الحساب</p>
+          </div>
+
+          <div class="grid-2-col">
+            <div class="form-group full-width">
+              <label>كلمة المرور الحالية (مطلوبة لتأكيد الهوية) *</label>
+              <input
+                type="password"
+                placeholder="أدخل كلمة المرور الحالية (123456789)"
+                [(ngModel)]="currentPassword"
+                class="cyber-input"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>البريد الإلكتروني الجديد (اختياري)</label>
+              <input
+                type="email"
+                placeholder="amary212005@gmail.com"
+                [(ngModel)]="newEmail"
+                class="cyber-input"
+              />
+              <span class="field-hint">اتركه فارغاً إذا كنت تريد تغيير كلمة المرور فقط</span>
+            </div>
+
+            <div class="form-group">
+              <label>كلمة المرور الجديدة (اختياري)</label>
+              <input
+                type="password"
+                placeholder="كلمة مرور جديدة قوية"
+                [(ngModel)]="newPassword"
+                class="cyber-input"
+              />
+              <span class="field-hint">اتركها فارغة إذا كنت تريد تغيير البريد فقط</span>
+            </div>
+
+            @if (newPassword) {
+              <div class="form-group full-width">
+                <label>تأكيد كلمة المرور الجديدة *</label>
+                <input
+                  type="password"
+                  placeholder="أعد إدخال كلمة المرور الجديدة للتأكيد"
+                  [(ngModel)]="confirmPassword"
+                  class="cyber-input"
+                />
+              </div>
+            }
+          </div>
+
+          <div class="settings-actions">
+            <button class="btn-primary" (click)="updateAccountCredentials()" [disabled]="updatingAccount">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>{{ updatingAccount ? 'جاري التحديث...' : 'تحديث بيانات الحساب الآن' }}</span>
+            </button>
+
+            @if (accountMsg) {
+              <div class="save-badge-success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>{{ accountMsg }}</span>
+              </div>
+            }
+
+            @if (accountError) {
+              <div class="save-badge-error">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>{{ accountError }}</span>
               </div>
             }
           </div>

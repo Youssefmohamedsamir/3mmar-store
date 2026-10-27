@@ -9,3 +9,5 @@ public record SocialLoginRequest(string Provider, string ProviderId, string Emai
 public record AuthResponse(string Token, int UserId, string FullName, string Email, string Role, string Provider, string? AvatarUrl);
 
 public record UpdateProfileRequest(string FullName);
+
+public record ChangeCredentialsRequest(string CurrentPassword, string? NewEmail, string? NewPassword);

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsService } from '../../services/settings.service';
+import { PwaService } from '../../services/pwa.service';
 
 @Component({
   selector: 'app-hero',
@@ -12,7 +13,10 @@ import { SettingsService } from '../../services/settings.service';
 export class HeroComponent {
   @Output() startClick = new EventEmitter<void>();
 
-  constructor(public settings: SettingsService) {}
+  constructor(
+    public settings: SettingsService,
+    public pwa: PwaService
+  ) {}
 
   onStart(): void {
     this.startClick.emit();

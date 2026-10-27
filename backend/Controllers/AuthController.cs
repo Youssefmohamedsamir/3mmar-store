@@ -118,4 +118,56 @@ public class AuthController : ControllerBase
         var token = _tokenService.CreateToken(user);
         return Ok(new AuthResponse(token, user.Id, user.FullName, user.Email, user.Role, user.Provider, user.AvatarUrl));
     }
+
+    [Authorize]
+    [HttpPost("change-credentials")]
+    public async Task<ActionResult<AuthResponse>> ChangeCredentials([FromBody] ChangeCredentialsRequest req)
+    {
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdStr, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return NotFound(new { message = "المستخدم غير موجود" });
+        }
+
+        // Verify current password
+        if (string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(req.CurrentPassword, user.PasswordHash))
+        {
+            return BadRequest(new { message = "كلمة المرور الحالية غير صحيحة" });
+        }
+
+        // Update email if provided
+        if (!string.IsNullOrWhiteSpace(req.NewEmail))
+        {
+            var normalizedEmail = req.NewEmail.Trim().ToLowerInvariant();
+            if (normalizedEmail != user.Email.ToLowerInvariant())
+            {
+                if (await _context.Users.AnyAsync(u => u.Email.ToLower() == normalizedEmail && u.Id != user.Id))
+                {
+                    return BadRequest(new { message = "البريد الإلكتروني الجديد مسجل بالفعل لحساب آخر" });
+                }
+                user.Email = normalizedEmail;
+            }
+        }
+
+        // Update password if provided
+        if (!string.IsNullOrWhiteSpace(req.NewPassword))
+        {
+            if (req.NewPassword.Length < 6)
+            {
+                return BadRequest(new { message = "كلمة المرور الجديدة يجب أن لا تقل عن 6 أحرف" });
+            }
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.NewPassword);
+        }
+
+        await _context.SaveChangesAsync();
+
+        var newToken = _tokenService.CreateToken(user);
+        return Ok(new AuthResponse(newToken, user.Id, user.FullName, user.Email, user.Role, user.Provider, user.AvatarUrl));
+    }
 }

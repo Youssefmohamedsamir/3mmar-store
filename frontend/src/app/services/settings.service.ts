@@ -11,14 +11,14 @@ export class SettingsService {
   private readonly apiUrl = 'http://localhost:5000/api/settings';
 
   settings = signal<StoreSettings>({
-    storeName: 'متجر عمار للهواتف والإكسسوارات',
-    phone: '+201000000000',
-    whatsApp: '201000000000',
+    storeName: '3mmar Store',
+    phone: '01044858440',
+    whatsApp: '01044858440',
     facebookUrl: 'https://facebook.com',
     instagramUrl: 'https://instagram.com',
     tiktokUrl: 'https://tiktok.com',
-    welcomeMessage: 'مرحباً بكم في متجر عمار للهواتف والإكسسوارات',
-    address: 'القاهرة، جمهورية مصر العربية'
+    welcomeMessage: 'مرحباً بكم في 3mmar Store',
+    address: 'مدينة السادات'
   });
 
   constructor(

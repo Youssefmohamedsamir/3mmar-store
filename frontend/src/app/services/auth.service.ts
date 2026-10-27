@@ -78,6 +78,14 @@ export class AuthService {
     );
   }
 
+  changeCredentials(data: { currentPassword: string; newEmail?: string; newPassword?: string }): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/change-credentials`, data, {
+      headers: { Authorization: `Bearer ${this.getToken()}` }
+    }).pipe(
+      tap(res => this.setSession(res))
+    );
+  }
+
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);

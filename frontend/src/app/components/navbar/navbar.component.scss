@@ -126,6 +126,34 @@
   gap: 10px;
 }
 
+.btn-pwa-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 230, 118, 0.08);
+  border: 1px solid rgba(0, 230, 118, 0.28);
+  color: #00E676;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+  }
+
+  &:hover {
+    background: #00E676;
+    color: #06090e;
+    transform: translateY(-1px);
+  }
+}
+
 /* Animated login button (Simple & clean) */
 .btn-login-animated {
   position: relative;

@@ -13,6 +13,7 @@ import { AnalyticsService } from './services/analytics.service';
 import { SettingsService } from './services/settings.service';
 import { ProductService } from './services/product.service';
 import { AuthService } from './services/auth.service';
+import { PwaService } from './services/pwa.service';
 
 @Component({
   selector: 'app-root',
@@ -42,7 +43,8 @@ export class App implements OnInit {
     private analyticsService: AnalyticsService,
     private settingsService: SettingsService,
     private productService: ProductService,
-    public auth: AuthService
+    public auth: AuthService,
+    public pwa: PwaService
   ) {}
 
   ngOnInit(): void {

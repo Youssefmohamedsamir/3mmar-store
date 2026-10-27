@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { SettingsService } from '../../services/settings.service';
+import { PwaService } from '../../services/pwa.service';
 
 @Component({
   selector: 'app-navbar',
@@ -18,7 +19,8 @@ export class NavbarComponent {
 
   constructor(
     public auth: AuthService,
-    public settings: SettingsService
+    public settings: SettingsService,
+    public pwa: PwaService
   ) {}
 
   toggleMobileMenu(): void {

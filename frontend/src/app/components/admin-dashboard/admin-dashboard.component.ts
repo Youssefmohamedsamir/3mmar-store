@@ -6,6 +6,7 @@ import { AnalyticsService } from '../../services/analytics.service';
 import { ProductService } from '../../services/product.service';
 import { SettingsService } from '../../services/settings.service';
 import { OffersService } from '../../services/offers.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -15,7 +16,16 @@ import { OffersService } from '../../services/offers.service';
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit {
-  activeTab: 'analytics' | 'products' | 'offers' | 'settings' = 'analytics';
+  activeTab: 'analytics' | 'products' | 'offers' | 'settings' | 'account' = 'analytics';
+
+  // Account management fields
+  currentPassword = '';
+  newEmail = '';
+  newPassword = '';
+  confirmPassword = '';
+  accountMsg = '';
+  accountError = '';
+  updatingAccount = false;
 
   // Analytics
   summary: AnalyticsSummary | null = null;
@@ -58,8 +68,49 @@ export class AdminDashboardComponent implements OnInit {
     private analyticsService: AnalyticsService,
     private productService: ProductService,
     public settingsService: SettingsService,
-    private offersService: OffersService
+    private offersService: OffersService,
+    public auth: AuthService
   ) {}
+
+  updateAccountCredentials(): void {
+    this.accountMsg = '';
+    this.accountError = '';
+
+    if (!this.currentPassword) {
+      this.accountError = 'يرجى إدخال كلمة المرور الحالية لتأكيد الهوية';
+      return;
+    }
+
+    if (this.newPassword && this.newPassword !== this.confirmPassword) {
+      this.accountError = 'كلمة المرور الجديدة غير متطابقة مع التأكيد';
+      return;
+    }
+
+    if (!this.newEmail && !this.newPassword) {
+      this.accountError = 'يرجى إدخال البريد الإلكتروني الجديد أو كلمة المرور الجديدة';
+      return;
+    }
+
+    this.updatingAccount = true;
+    this.auth.changeCredentials({
+      currentPassword: this.currentPassword,
+      newEmail: this.newEmail || undefined,
+      newPassword: this.newPassword || undefined
+    }).subscribe({
+      next: () => {
+        this.updatingAccount = false;
+        this.accountMsg = 'تم تحديث بيانات حساب الأدمن بنجاح!';
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
+        setTimeout(() => this.accountMsg = '', 4000);
+      },
+      error: (err) => {
+        this.updatingAccount = false;
+        this.accountError = err.error?.message || 'تعذر تحديث البيانات، تأكد من صحة كلمة المرور الحالية';
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadSummary();
