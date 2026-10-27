@@ -25,6 +25,7 @@ export interface Product {
   price: number;
   oldPrice?: number;
   imageUrl: string;
+  images?: string[];
   isAvailable: boolean;
   isFeatured: boolean;
   createdAt: string;

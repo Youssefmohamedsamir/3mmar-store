@@ -5,8 +5,8 @@
       <h2 class="section-heading">العروض</h2>
     </div>
 
-    <!-- Professional Empty State for Offers -->
-    @if (offers.length === 0 && !loading) {
+    <!-- Professional Empty State for Offers: ALWAYS displayed when there are no offers -->
+    @if (offers.length === 0) {
       <div class="empty-offers-card glass-panel animate-fade-in">
         <div class="empty-icon-shield">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

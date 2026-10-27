@@ -222,6 +222,43 @@
   }
 }
 
+.card-thumbnails-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 230, 118, 0.3);
+  }
+
+  .card-strip-thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      border-color: rgba(0, 230, 118, 0.6);
+      transform: scale(1.08);
+    }
+
+    &.active {
+      border-color: #00E676;
+      box-shadow: 0 0 8px rgba(0, 230, 118, 0.5);
+    }
+  }
+}
+
 .card-body {
   padding: 14px 16px 16px 16px;
   display: flex;

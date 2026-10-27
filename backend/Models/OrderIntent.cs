@@ -7,7 +7,7 @@ public class OrderIntent
     public User? User { get; set; }
     public int ProductId { get; set; }
     public Product? Product { get; set; }
-    public string OrderType { get; set; } = "WhatsApp"; // "WhatsApp" or "Phone"
+    public string OrderType { get; set; } = "WhatsApp";
     public string? CustomerPhone { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

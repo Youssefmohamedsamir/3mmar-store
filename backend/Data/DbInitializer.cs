@@ -9,6 +9,16 @@ public static class DbInitializer
     {
         await context.Database.EnsureCreatedAsync();
 
+        // Safe column check for ImagesJson in SQLite
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE Products ADD COLUMN ImagesJson TEXT DEFAULT '';");
+        }
+        catch
+        {
+            // Column already exists
+        }
+
         // Seed Store Settings
         if (!await context.StoreSettings.AnyAsync())
         {
@@ -28,13 +38,15 @@ public static class DbInitializer
             await context.SaveChangesAsync();
         }
 
-        // Seed Primary Admin User
-        if (!await context.Users.AnyAsync(u => u.Role == "Admin"))
+        // Ensure Primary Admin User always exists and has role Admin with password 123456789
+        var primaryEmail = "amary212005@gmail.com";
+        var existingAdmin = await context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == primaryEmail);
+        if (existingAdmin == null)
         {
             var admin = new User
             {
                 FullName = "عمار (Admin)",
-                Email = "amary212005@gmail.com",
+                Email = primaryEmail,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456789"),
                 Role = "Admin",
                 Provider = "Local",
@@ -42,6 +54,15 @@ public static class DbInitializer
             };
 
             await context.Users.AddAsync(admin);
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            existingAdmin.Role = "Admin";
+            if (!BCrypt.Net.BCrypt.Verify("123456789", existingAdmin.PasswordHash))
+            {
+                existingAdmin.PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456789");
+            }
             await context.SaveChangesAsync();
         }
     }

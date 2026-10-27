@@ -22,6 +22,15 @@ export class ProductListComponent implements OnInit, OnChanges {
   products: Product[] = [];
   loading = false;
   searchQuery = '';
+  activeImages: Map<number, string> = new Map();
+
+  getActiveImage(product: Product): string {
+    return this.activeImages.get(product.id) || product.imageUrl || 'logo.png';
+  }
+
+  selectImage(product: Product, img: string): void {
+    this.activeImages.set(product.id, img);
+  }
 
   constructor(
     private productService: ProductService,

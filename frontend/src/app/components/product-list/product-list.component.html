@@ -71,7 +71,7 @@
         @for (product of products; track product.id) {
           <div class="product-card glass-panel">
             <div class="card-image-box">
-              <img [src]="product.imageUrl" [alt]="product.name" class="product-img" loading="lazy" />
+              <img [src]="getActiveImage(product)" [alt]="product.name" class="product-img" loading="lazy" />
               <div class="badges-row">
                 <span class="badge-cat">{{ product.category }}</span>
                 @if (product.isAvailable) {
@@ -81,6 +81,21 @@
                 }
               </div>
             </div>
+
+            <!-- Multiple images thumbnails bar if more than 1 image exists -->
+            @if (product.images && product.images.length > 1) {
+              <div class="card-thumbnails-strip">
+                @for (img of product.images; track $index) {
+                  <img
+                    [src]="img"
+                    class="card-strip-thumb"
+                    [class.active]="getActiveImage(product) === img"
+                    (click)="selectImage(product, img); $event.stopPropagation()"
+                    alt="Thumbnail"
+                  />
+                }
+              </div>
+            }
 
             <div class="card-body">
               <h4 class="product-title" [title]="product.name">{{ product.name }}</h4>

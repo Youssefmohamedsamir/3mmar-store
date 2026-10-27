@@ -42,21 +42,23 @@ public class ProductsController : ControllerBase
             query = query.Where(p => p.IsAvailable);
         }
 
-        var products = await query
+        var rawProducts = await query
             .OrderByDescending(p => p.IsFeatured)
             .ThenByDescending(p => p.CreatedAt)
-            .Select(p => new ProductDto(
-                p.Id,
-                p.Name,
-                p.Category,
-                p.Description,
-                p.Price,
-                p.OldPrice,
-                p.ImageUrl,
-                p.IsAvailable,
-                p.IsFeatured,
-                p.CreatedAt))
             .ToListAsync();
+
+        var products = rawProducts.Select(p => new ProductDto(
+            p.Id,
+            p.Name,
+            p.Category,
+            p.Description,
+            p.Price,
+            p.OldPrice,
+            p.ImageUrl,
+            ParseImages(p.ImageUrl, p.ImagesJson),
+            p.IsAvailable,
+            p.IsFeatured,
+            p.CreatedAt)).ToList();
 
         return Ok(products);
     }
@@ -75,6 +77,7 @@ public class ProductsController : ControllerBase
             p.Price,
             p.OldPrice,
             p.ImageUrl,
+            ParseImages(p.ImageUrl, p.ImagesJson),
             p.IsAvailable,
             p.IsFeatured,
             p.CreatedAt));
@@ -84,6 +87,19 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ProductDto>> CreateProduct([FromBody] CreateProductRequest req)
     {
+        var imagesList = req.Images != null && req.Images.Count > 0 
+            ? req.Images.Where(x => !string.IsNullOrWhiteSpace(x)).ToList() 
+            : new List<string>();
+
+        var primaryImg = !string.IsNullOrWhiteSpace(req.ImageUrl)
+            ? req.ImageUrl.Trim()
+            : (imagesList.Count > 0 ? imagesList[0] : "logo.png");
+
+        if (imagesList.Count > 0 && !imagesList.Contains(primaryImg))
+        {
+            imagesList.Insert(0, primaryImg);
+        }
+
         var product = new Product
         {
             Name = req.Name.Trim(),
@@ -91,16 +107,15 @@ public class ProductsController : ControllerBase
             Description = req.Description.Trim(),
             Price = req.Price,
             OldPrice = req.OldPrice,
-            ImageUrl = string.IsNullOrWhiteSpace(req.ImageUrl)
-                ? "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=800&q=80"
-                : req.ImageUrl.Trim(),
+            ImageUrl = primaryImg,
+            ImagesJson = System.Text.Json.JsonSerializer.Serialize(imagesList),
             IsAvailable = req.IsAvailable,
             IsFeatured = req.IsFeatured,
             CreatedAt = DateTime.UtcNow
         };
 
         _context.Products.Add(product);
-        await _context.SaveChangesAsync();
+        await contextSaveWithRetry();
 
         return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, new ProductDto(
             product.Id,
@@ -110,6 +125,7 @@ public class ProductsController : ControllerBase
             product.Price,
             product.OldPrice,
             product.ImageUrl,
+            ParseImages(product.ImageUrl, product.ImagesJson),
             product.IsAvailable,
             product.IsFeatured,
             product.CreatedAt));
@@ -122,16 +138,30 @@ public class ProductsController : ControllerBase
         var product = await _context.Products.FindAsync(id);
         if (product == null) return NotFound(new { message = "المنتج غير موجود" });
 
+        var imagesList = req.Images != null && req.Images.Count > 0 
+            ? req.Images.Where(x => !string.IsNullOrWhiteSpace(x)).ToList() 
+            : new List<string>();
+
+        var primaryImg = !string.IsNullOrWhiteSpace(req.ImageUrl)
+            ? req.ImageUrl.Trim()
+            : (imagesList.Count > 0 ? imagesList[0] : (string.IsNullOrWhiteSpace(product.ImageUrl) ? "logo.png" : product.ImageUrl));
+
+        if (imagesList.Count > 0 && !imagesList.Contains(primaryImg))
+        {
+            imagesList.Insert(0, primaryImg);
+        }
+
         product.Name = req.Name.Trim();
         product.Category = req.Category.Trim();
         product.Description = req.Description.Trim();
         product.Price = req.Price;
         product.OldPrice = req.OldPrice;
-        product.ImageUrl = req.ImageUrl.Trim();
+        product.ImageUrl = primaryImg;
+        product.ImagesJson = System.Text.Json.JsonSerializer.Serialize(imagesList);
         product.IsAvailable = req.IsAvailable;
         product.IsFeatured = req.IsFeatured;
 
-        await _context.SaveChangesAsync();
+        await contextSaveWithRetry();
 
         return Ok(new ProductDto(
             product.Id,
@@ -141,9 +171,38 @@ public class ProductsController : ControllerBase
             product.Price,
             product.OldPrice,
             product.ImageUrl,
+            ParseImages(product.ImageUrl, product.ImagesJson),
             product.IsAvailable,
             product.IsFeatured,
             product.CreatedAt));
+    }
+
+    private async Task contextSaveWithRetry()
+    {
+        await _context.SaveChangesAsync();
+    }
+
+    private static List<string> ParseImages(string imageUrl, string? imagesJson)
+    {
+        var list = new List<string>();
+        if (!string.IsNullOrWhiteSpace(imagesJson))
+        {
+            try
+            {
+                var deserialized = System.Text.Json.JsonSerializer.Deserialize<List<string>>(imagesJson);
+                if (deserialized != null)
+                {
+                    list.AddRange(deserialized.Where(x => !string.IsNullOrWhiteSpace(x)));
+                }
+            }
+            catch { }
+        }
+
+        if (!string.IsNullOrWhiteSpace(imageUrl) && !list.Contains(imageUrl))
+        {
+            list.Insert(0, imageUrl);
+        }
+        return list;
     }
 
     [Authorize(Roles = "Admin")]

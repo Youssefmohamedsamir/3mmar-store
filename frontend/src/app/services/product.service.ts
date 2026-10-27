@@ -25,23 +25,65 @@ export class ProductService {
     };
   }
 
+  private getLocalCache(key: string): Product[] | null {
+    try {
+      const data = localStorage.getItem(`3mmar_cache_${key}`);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private setLocalCache(key: string, data: Product[]): void {
+    try {
+      // Keep only essential fields to prevent quota issues
+      const cleanData = data.slice(0, 50).map(p => ({
+        ...p,
+        // if base64 images are very huge, truncate non-primary images for localStorage
+        images: (p.images || [p.imageUrl]).slice(0, 3)
+      }));
+      localStorage.setItem(`3mmar_cache_${key}`, JSON.stringify(cleanData));
+    } catch {
+      // Quota exceeded safe fallback
+    }
+  }
+
   hasCached(category?: string): boolean {
-    return this.cache.has(category || 'All');
+    const key = category || 'All';
+    return this.cache.has(key) || !!this.getLocalCache(key);
   }
 
   getCached(category?: string): Product[] | null {
-    return this.cache.get(category || 'All') || null;
+    const key = category || 'All';
+    if (this.cache.has(key)) {
+      return this.cache.get(key)!;
+    }
+    const local = this.getLocalCache(key);
+    if (local) {
+      this.cache.set(key, local);
+      return local;
+    }
+    return null;
   }
 
   clearCache(): void {
     this.cache.clear();
+    try {
+      for (const cat of ['All', 'IPhone', 'Android', 'Accessories', 'Other']) {
+        localStorage.removeItem(`3mmar_cache_${cat}`);
+      }
+    } catch {}
   }
 
   getProducts(category?: string, search?: string, forceRefresh: boolean = false): Observable<Product[]> {
     const cacheKey = category || 'All';
-    // If we have cached results and no active search query, return instantly
-    if (!search && !forceRefresh && this.cache.has(cacheKey)) {
-      return of(this.cache.get(cacheKey)!);
+    
+    // Return cached data immediately if available and no search
+    if (!search && !forceRefresh) {
+      const cached = this.getCached(cacheKey);
+      if (cached && cached.length > 0) {
+        return of(cached);
+      }
     }
 
     let params = new HttpParams();
@@ -56,6 +98,7 @@ export class ProductService {
       tap((data) => {
         if (!search) {
           this.cache.set(cacheKey, data);
+          this.setLocalCache(cacheKey, data);
         }
       })
     );

@@ -9,6 +9,7 @@ public class Product
     public decimal Price { get; set; }
     public decimal? OldPrice { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
+    public string ImagesJson { get; set; } = string.Empty;
     public bool IsAvailable { get; set; } = true;
     public bool IsFeatured { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

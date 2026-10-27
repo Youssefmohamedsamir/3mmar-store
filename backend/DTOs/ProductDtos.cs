@@ -8,6 +8,7 @@ public record ProductDto(
     decimal Price,
     decimal? OldPrice,
     string ImageUrl,
+    List<string>? Images,
     bool IsAvailable,
     bool IsFeatured,
     DateTime CreatedAt
@@ -20,6 +21,7 @@ public record CreateProductRequest(
     decimal Price,
     decimal? OldPrice,
     string ImageUrl,
+    List<string>? Images,
     bool IsAvailable,
     bool IsFeatured
 );
@@ -31,6 +33,7 @@ public record UpdateProductRequest(
     decimal Price,
     decimal? OldPrice,
     string ImageUrl,
+    List<string>? Images,
     bool IsAvailable,
     bool IsFeatured
 );

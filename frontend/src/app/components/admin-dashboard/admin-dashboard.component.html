@@ -183,17 +183,14 @@
     <!-- TAB 2: Products Management -->
     @if (activeTab === 'products') {
       <div class="tab-content animate-fade-in">
-        <!-- CENTERED Glowing Add Product Button with Animation -->
-        <div class="centered-actions-bar">
-          <button class="btn-action-glow btn-product-theme" (click)="openCreateProduct()">
-            <span class="btn-glow-aura"></span>
-            <span class="btn-inner-content">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-5 h-5">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>إضافة منتج جديد</span>
-            </span>
+        <!-- Simple, Clean Add Product Button -->
+        <div class="action-bar-simple">
+          <button class="btn-simple-action btn-prod" (click)="openCreateProduct()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>إضافة منتج جديد</span>
           </button>
         </div>
 
@@ -236,16 +233,13 @@
     <!-- TAB 3: Offers Management -->
     @if (activeTab === 'offers') {
       <div class="tab-content animate-fade-in">
-        <!-- CENTERED Glowing Distinct Amber Add Offer Button -->
-        <div class="centered-actions-bar">
-          <button class="btn-action-glow btn-offer-theme" (click)="openCreateOffer()">
-            <span class="btn-glow-aura aura-amber"></span>
-            <span class="btn-inner-content">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-5 h-5">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-              </svg>
-              <span>إضافة عرض جديد</span>
-            </span>
+        <!-- Simple, Clean Add Offer Button -->
+        <div class="action-bar-simple">
+          <button class="btn-simple-action btn-ofr" (click)="openCreateOffer()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span>إضافة عرض جديد</span>
           </button>
         </div>
 
@@ -479,13 +473,14 @@
     }
   </div>
 
-  <!-- FIXED MODAL 1: Create/Edit Product Modal with Direct Image Upload -->
+  <!-- FIXED RESPONSIVE MODAL 1: Create/Edit Product with Multi-Image Support -->
   @if (showProductModal) {
-    <div class="modal-backdrop animate-fade-in" (click)="showProductModal = false">
+    <div class="modal-backdrop animate-fade-in" (click)="closeProductModal()">
       <div class="modal-box glass-panel" (click)="$event.stopPropagation()">
+        <!-- Fixed Header -->
         <div class="modal-header-row">
           <h3 class="modal-header-title">{{ editingProduct.id ? 'تعديل بيانات المنتج' : 'إضافة منتج جديد' }}</h3>
-          <button class="btn-close-modal" (click)="showProductModal = false" title="إغلاق">
+          <button class="btn-close-modal" (click)="closeProductModal()" title="إغلاق">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -493,48 +488,47 @@
           </button>
         </div>
         
-        <div class="modal-form-grid">
-          <div class="form-group">
-            <label>اسم المنتج *</label>
-            <input type="text" [(ngModel)]="editingProduct.name" class="cyber-input" placeholder="مثال: iPhone 15 Pro Max" />
-          </div>
+        <!-- Scrollable Body: Fits perfectly on any screen height without shrinking -->
+        <div class="modal-body-scrollable">
+          <div class="modal-form-grid">
+            <div class="form-group">
+              <label>اسم المنتج *</label>
+              <input type="text" [(ngModel)]="editingProduct.name" class="cyber-input" placeholder="مثال: iPhone 15 Pro Max" />
+            </div>
 
-          <div class="form-group">
-            <label>القسم (الخانة) *</label>
-            <select [(ngModel)]="editingProduct.category" class="cyber-input">
-              <option value="IPhone">IPhone (أجهزة آبل)</option>
-              <option value="Android">Android (أجهزة أندرويد)</option>
-              <option value="Accessories">Accessories (إكسسوارات)</option>
-              <option value="Other">Other (أجهزة أخرى)</option>
-            </select>
-          </div>
+            <div class="form-group">
+              <label>القسم (الخانة) *</label>
+              <select [(ngModel)]="editingProduct.category" class="cyber-input">
+                <option value="IPhone">IPhone (أجهزة آبل)</option>
+                <option value="Android">Android (أجهزة أندرويد)</option>
+                <option value="Accessories">Accessories (إكسسوارات)</option>
+                <option value="Other">Other (أجهزة أخرى)</option>
+              </select>
+            </div>
 
-          <div class="form-group">
-            <label>السعر (ج.م) *</label>
-            <input type="number" [(ngModel)]="editingProduct.price" class="cyber-input" placeholder="0" />
-          </div>
+            <div class="form-group">
+              <label>السعر (ج.م) *</label>
+              <input type="number" [(ngModel)]="editingProduct.price" class="cyber-input" placeholder="0" />
+            </div>
 
-          <div class="form-group">
-            <label>السعر قبل الخصم (اختياري)</label>
-            <input type="number" [(ngModel)]="editingProduct.oldPrice" class="cyber-input" placeholder="0" />
-          </div>
+            <div class="form-group">
+              <label>السعر قبل الخصم (اختياري)</label>
+              <input type="number" [(ngModel)]="editingProduct.oldPrice" class="cyber-input" placeholder="0" />
+            </div>
 
-          <!-- Direct Image Upload Zone -->
-          <div class="form-group full-width">
-            <label>صورة المنتج</label>
-            
-            <input type="file" #productFileInput (change)="onProductImageSelected($event)" accept="image/*" style="display: none;" />
-
-            @if (editingProduct.imageUrl) {
-              <div class="image-preview-container">
-                <img [src]="editingProduct.imageUrl" alt="Preview" class="preview-thumbnail" />
-                <div class="preview-actions">
-                  <button type="button" class="btn-change-image" (click)="productFileInput.click()">تغيير الصورة</button>
-                  <button type="button" class="btn-remove-image" (click)="removeProductImage()">إزالة</button>
-                </div>
+            <!-- Multi-Image Upload Section -->
+            <div class="form-group full-width">
+              <div class="section-label-row">
+                <label>صور المنتج (يمكنك رفع أكثر من صورة)</label>
+                @if (productImages.length > 0) {
+                  <span class="count-pill">{{ productImages.length }} صورة</span>
+                }
               </div>
-            } @else {
-              <div class="upload-dropzone" (click)="productFileInput.click()">
+              
+              <input type="file" #productFilesInput (change)="onProductImagesSelected($event)" accept="image/*" multiple style="display: none;" />
+
+              <!-- Upload Button / Dropzone -->
+              <div class="upload-dropzone" (click)="productFilesInput.click()">
                 <div class="dropzone-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -542,49 +536,80 @@
                     <polyline points="21 15 16 10 5 21"></polyline>
                   </svg>
                 </div>
-                <span class="dropzone-text">انقر لاختيار ورفع صورة من جهازك</span>
-                <span class="dropzone-sub">يدعم JPG, PNG, WebP</span>
+                <span class="dropzone-text">انقر لاختيار صورة أو عدة صور للمنتج</span>
+                <span class="dropzone-sub">يتم ضغط الصور تلقائياً لسرعة التحميل الفائقة</span>
               </div>
-            }
 
-            <div class="direct-url-fallback">
-              <input type="text" [(ngModel)]="editingProduct.imageUrl" class="cyber-input url-input" placeholder="أو الصق رابط صورة مباشر هنا (https://...)" />
+              <!-- Multi-Image Preview Gallery Grid -->
+              @if (productImages.length > 0) {
+                <div class="multi-images-grid">
+                  @for (img of productImages; track $index) {
+                    <div class="image-gallery-item" [class.is-primary]="img === editingProduct.imageUrl">
+                      <img [src]="img" alt="Product Image" class="gallery-thumb" />
+                      
+                      @if (img === editingProduct.imageUrl) {
+                        <span class="primary-badge">الرئيسية</span>
+                      } @else {
+                        <button type="button" class="btn-set-primary" (click)="setPrimaryProductImage(img)" title="تعيين كصورة رئيسية">
+                          اجعلها رئيسية
+                        </button>
+                      }
+
+                      <button type="button" class="btn-delete-img" (click)="removeProductImageAt($index)" title="حذف الصورة">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Direct URL Fallback -->
+              <div class="direct-url-fallback">
+                <input type="text" #urlInput (keyup.enter)="addImageFromUrl(urlInput.value); urlInput.value=''" class="cyber-input url-input" placeholder="أو الصق رابط صورة ثم اضغط Enter للإضافة..." />
+              </div>
             </div>
-          </div>
 
-          <div class="form-group full-width">
-            <label>وصف ومواصفات المنتج</label>
-            <textarea rows="3" [(ngModel)]="editingProduct.description" class="cyber-input" placeholder="مواصفات الجهاز أو الملحق..."></textarea>
-          </div>
+            <div class="form-group full-width">
+              <label>وصف ومواصفات المنتج</label>
+              <textarea rows="3" [(ngModel)]="editingProduct.description" class="cyber-input" placeholder="مواصفات الجهاز أو الملحق..."></textarea>
+            </div>
 
-          <div class="form-group full-width checkbox-row">
-            <label class="custom-checkbox">
-              <input type="checkbox" [(ngModel)]="editingProduct.isAvailable" />
-              <span>متوفر للطلب حالياً</span>
-            </label>
+            <div class="form-group full-width checkbox-row">
+              <label class="custom-checkbox">
+                <input type="checkbox" [(ngModel)]="editingProduct.isAvailable" />
+                <span>متوفر للطلب حالياً</span>
+              </label>
 
-            <label class="custom-checkbox">
-              <input type="checkbox" [(ngModel)]="editingProduct.isFeatured" />
-              <span>تمييز المنتج في الواجهة</span>
-            </label>
+              <label class="custom-checkbox">
+                <input type="checkbox" [(ngModel)]="editingProduct.isFeatured" />
+                <span>تمييز المنتج في الواجهة</span>
+              </label>
+            </div>
           </div>
         </div>
 
+        <!-- Fixed Footer: Always visible on all screen sizes -->
         <div class="modal-actions-footer">
-          <button class="btn-primary" (click)="saveProduct()">حفظ المنتج</button>
-          <button class="btn-outline" (click)="showProductModal = false">إلغاء</button>
+          <button class="btn-primary" (click)="saveProduct()" [disabled]="savingProduct">
+            <span>{{ savingProduct ? 'جاري الحفظ...' : (editingProduct.id ? 'حفظ التعديلات' : 'إضافة المنتج الآن') }}</span>
+          </button>
+          <button class="btn-outline" (click)="closeProductModal()" [disabled]="savingProduct">إلغاء</button>
         </div>
       </div>
     </div>
   }
 
-  <!-- FIXED MODAL 2: Create/Edit Offer Modal with Direct Image Upload -->
+  <!-- FIXED RESPONSIVE MODAL 2: Create/Edit Offer -->
   @if (showOfferModal) {
-    <div class="modal-backdrop animate-fade-in" (click)="showOfferModal = false">
+    <div class="modal-backdrop animate-fade-in" (click)="closeOfferModal()">
       <div class="modal-box glass-panel" (click)="$event.stopPropagation()">
+        <!-- Fixed Header -->
         <div class="modal-header-row">
           <h3 class="modal-header-title">{{ editingOffer.id ? 'تعديل العرض' : 'إضافة عرض جديد' }}</h3>
-          <button class="btn-close-modal" (click)="showOfferModal = false" title="إغلاق">
+          <button class="btn-close-modal" (click)="closeOfferModal()" title="إغلاق">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -592,58 +617,64 @@
           </button>
         </div>
         
-        <div class="modal-form-grid">
-          <div class="form-group full-width">
-            <label>عنوان العرض *</label>
-            <input type="text" [(ngModel)]="editingOffer.title" class="cyber-input" placeholder="مثال: خصم 15% على شواحن Anker" />
-          </div>
-
-          <div class="form-group">
-            <label>شارة العرض (Badge)</label>
-            <input type="text" [(ngModel)]="editingOffer.badgeText" class="cyber-input" placeholder="مثال: عرض خاص" />
-          </div>
-
-          <!-- Direct Image Upload Zone for Offers -->
-          <div class="form-group full-width">
-            <label>صورة العرض</label>
-            <input type="file" #offerFileInput (change)="onOfferImageSelected($event)" accept="image/*" style="display: none;" />
-
-            @if (editingOffer.imageUrl) {
-              <div class="image-preview-container">
-                <img [src]="editingOffer.imageUrl" alt="Preview" class="preview-thumbnail" />
-                <div class="preview-actions">
-                  <button type="button" class="btn-change-image" (click)="offerFileInput.click()">تغيير الصورة</button>
-                  <button type="button" class="btn-remove-image" (click)="removeOfferImage()">إزالة</button>
-                </div>
-              </div>
-            } @else {
-              <div class="upload-dropzone" (click)="offerFileInput.click()">
-                <div class="dropzone-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                    <polyline points="21 15 16 10 5 21"></polyline>
-                  </svg>
-                </div>
-                <span class="dropzone-text">انقر لاختيار ورفع صورة العرض</span>
-                <span class="dropzone-sub">يدعم JPG, PNG, WebP</span>
-              </div>
-            }
-
-            <div class="direct-url-fallback">
-              <input type="text" [(ngModel)]="editingOffer.imageUrl" class="cyber-input url-input" placeholder="أو الصق رابط صورة مباشر هنا (https://...)" />
+        <!-- Scrollable Body -->
+        <div class="modal-body-scrollable">
+          <div class="modal-form-grid">
+            <div class="form-group full-width">
+              <label>عنوان العرض *</label>
+              <input type="text" [(ngModel)]="editingOffer.title" class="cyber-input" placeholder="مثال: خصم 15% على شواحن Anker" />
             </div>
-          </div>
 
-          <div class="form-group full-width">
-            <label>تفاصيل ومميزات العرض</label>
-            <textarea rows="3" [(ngModel)]="editingOffer.description" class="cyber-input" placeholder="اكتب تفاصيل العرض..."></textarea>
+            <div class="form-group">
+              <label>شارة العرض (Badge)</label>
+              <input type="text" [(ngModel)]="editingOffer.badgeText" class="cyber-input" placeholder="مثال: عرض خاص" />
+            </div>
+
+            <!-- Direct Image Upload Zone for Offers -->
+            <div class="form-group full-width">
+              <label>صورة العرض</label>
+              <input type="file" #offerFileInput (change)="onOfferImageSelected($event)" accept="image/*" style="display: none;" />
+
+              @if (editingOffer.imageUrl) {
+                <div class="image-preview-container">
+                  <img [src]="editingOffer.imageUrl" alt="Preview" class="preview-thumbnail" />
+                  <div class="preview-actions">
+                    <button type="button" class="btn-change-image" (click)="offerFileInput.click()">تغيير الصورة</button>
+                    <button type="button" class="btn-remove-image" (click)="removeOfferImage()">إزالة</button>
+                  </div>
+                </div>
+              } @else {
+                <div class="upload-dropzone" (click)="offerFileInput.click()">
+                  <div class="dropzone-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </div>
+                  <span class="dropzone-text">انقر لاختيار ورفع صورة العرض</span>
+                  <span class="dropzone-sub">يدعم JPG, PNG, WebP</span>
+                </div>
+              }
+
+              <div class="direct-url-fallback">
+                <input type="text" [(ngModel)]="editingOffer.imageUrl" class="cyber-input url-input" placeholder="أو الصق رابط صورة مباشر هنا (https://...)" />
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label>تفاصيل ومميزات العرض</label>
+              <textarea rows="3" [(ngModel)]="editingOffer.description" class="cyber-input" placeholder="اكتب تفاصيل العرض..."></textarea>
+            </div>
           </div>
         </div>
 
+        <!-- Fixed Footer -->
         <div class="modal-actions-footer">
-          <button class="btn-primary" (click)="saveOffer()">حفظ العرض</button>
-          <button class="btn-outline" (click)="showOfferModal = false">إلغاء</button>
+          <button class="btn-primary" (click)="saveOffer()" [disabled]="savingOffer">
+            <span>{{ savingOffer ? 'جاري الحفظ...' : (editingOffer.id ? 'حفظ التعديلات' : 'إضافة العرض الآن') }}</span>
+          </button>
+          <button class="btn-outline" (click)="closeOfferModal()" [disabled]="savingOffer">إلغاء</button>
         </div>
       </div>
     </div>

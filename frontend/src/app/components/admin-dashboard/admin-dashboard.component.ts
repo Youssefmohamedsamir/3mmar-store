@@ -35,6 +35,8 @@ export class AdminDashboardComponent implements OnInit {
   products: Product[] = [];
   loadingProducts = false;
   showProductModal = false;
+  savingProduct = false;
+  productImages: string[] = [];
   editingProduct: Partial<Product> = {
     category: 'IPhone',
     isAvailable: true,
@@ -45,6 +47,7 @@ export class AdminDashboardComponent implements OnInit {
   offers: Offer[] = [];
   loadingOffers = false;
   showOfferModal = false;
+  savingOffer = false;
   editingOffer: Partial<Offer> = {
     badgeText: 'عرض خاص',
     isActive: true
@@ -78,38 +81,116 @@ export class AdminDashboardComponent implements OnInit {
     this.showOfferModal = false;
   }
 
-  onProductImageSelected(event: any): void {
-    const file = event.target?.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('حجم الصورة كبير، يرجى اختيار صورة أقل من 5 ميجابايت');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.editingProduct.imageUrl = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+  closeProductModal(): void {
+    if (!this.savingProduct) {
+      this.showProductModal = false;
     }
   }
 
-  onOfferImageSelected(event: any): void {
-    const file = event.target?.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('حجم الصورة كبير، يرجى اختيار صورة أقل من 5 ميجابايت');
-        return;
-      }
+  closeOfferModal(): void {
+    if (!this.savingOffer) {
+      this.showOfferModal = false;
+    }
+  }
+
+  private compressImage(file: File, maxWidth = 1000, maxHeight = 1000, quality = 0.82): Promise<string> {
+    return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = () => {
-        this.editingOffer.imageUrl = reader.result as string;
+      reader.onload = (e: any) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          } else {
+            resolve(e.target.result as string);
+          }
+        };
+        img.onerror = () => resolve(e.target.result as string);
+        img.src = e.target.result;
       };
+      reader.onerror = () => resolve('');
       reader.readAsDataURL(file);
+    });
+  }
+
+  async onProductImagesSelected(event: any): Promise<void> {
+    const files: FileList | null = event.target?.files;
+    if (!files || files.length === 0) return;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        const compressedBase64 = await this.compressImage(file);
+        if (compressedBase64 && !this.productImages.includes(compressedBase64)) {
+          this.productImages.push(compressedBase64);
+        }
+      }
+    }
+
+    if (!this.editingProduct.imageUrl && this.productImages.length > 0) {
+      this.editingProduct.imageUrl = this.productImages[0];
+    }
+    // Reset file input value to allow re-uploading same file if desired
+    event.target.value = '';
+  }
+
+  setPrimaryProductImage(img: string): void {
+    this.editingProduct.imageUrl = img;
+    const idx = this.productImages.indexOf(img);
+    if (idx > 0) {
+      this.productImages.splice(idx, 1);
+      this.productImages.unshift(img);
+    }
+  }
+
+  removeProductImageAt(index: number): void {
+    const removed = this.productImages.splice(index, 1)[0];
+    if (this.editingProduct.imageUrl === removed) {
+      this.editingProduct.imageUrl = this.productImages[0] || '';
+    }
+  }
+
+  addImageFromUrl(url: string): void {
+    const clean = url?.trim();
+    if (clean && !this.productImages.includes(clean)) {
+      this.productImages.push(clean);
+      if (!this.editingProduct.imageUrl) {
+        this.editingProduct.imageUrl = clean;
+      }
+    }
+  }
+
+  async onOfferImageSelected(event: any): Promise<void> {
+    const file = event.target?.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const compressed = await this.compressImage(file);
+      this.editingOffer.imageUrl = compressed;
     }
   }
 
   removeProductImage(): void {
     this.editingProduct.imageUrl = '';
+    this.productImages = [];
   }
 
   removeOfferImage(): void {
@@ -212,6 +293,7 @@ export class AdminDashboardComponent implements OnInit {
 
   // Product Actions
   openCreateProduct(): void {
+    this.productImages = [];
     this.editingProduct = {
       name: '',
       category: 'IPhone',
@@ -219,6 +301,7 @@ export class AdminDashboardComponent implements OnInit {
       price: 0,
       oldPrice: undefined,
       imageUrl: '',
+      images: [],
       isAvailable: true,
       isFeatured: false
     };
@@ -227,36 +310,65 @@ export class AdminDashboardComponent implements OnInit {
 
   openEditProduct(p: Product): void {
     this.editingProduct = { ...p };
+    this.productImages = p.images && p.images.length > 0
+      ? [...p.images]
+      : (p.imageUrl ? [p.imageUrl] : []);
     this.showProductModal = true;
   }
 
   saveProduct(): void {
-    if (!this.editingProduct.name || !this.editingProduct.price) {
-      alert('يرجى كتابة اسم المنتج وسعره');
+    if (!this.editingProduct.name || !this.editingProduct.name.trim()) {
+      alert('يرجى كتابة اسم المنتج');
+      return;
+    }
+    if (this.editingProduct.price === undefined || this.editingProduct.price === null || this.editingProduct.price < 0) {
+      alert('يرجى كتابة سعر صحيح للمنتج');
       return;
     }
 
-    if (this.editingProduct.id) {
-      this.productService.updateProduct(this.editingProduct.id, this.editingProduct).subscribe({
-        next: () => {
-          this.showProductModal = false;
-          this.loadProducts();
+    this.savingProduct = true;
+
+    // Attach images
+    const imagesToSave = [...this.productImages];
+    const primaryImg = this.editingProduct.imageUrl || (imagesToSave.length > 0 ? imagesToSave[0] : 'logo.png');
+
+    const payload: Partial<Product> = {
+      ...this.editingProduct,
+      imageUrl: primaryImg,
+      images: imagesToSave
+    };
+
+    const request$ = this.editingProduct.id
+      ? this.productService.updateProduct(this.editingProduct.id, payload)
+      : this.productService.createProduct(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.savingProduct = false;
+        this.showProductModal = false;
+        this.productImages = [];
+        this.loadProducts();
+      },
+      error: (err) => {
+        this.savingProduct = false;
+        console.error('Error saving product:', err);
+        if (err.status === 401) {
+          alert('انتهت جلسة تسجيل الدخول للأدمن أو تم رفض الصلاحية. يرجى تسجيل الدخول مجدداً بحساب amary212005@gmail.com');
+        } else {
+          alert('تعذر حفظ المنتج في السيرفر: ' + (err.error?.message || err.message || 'يرجى التحقق من الاتصال'));
         }
-      });
-    } else {
-      this.productService.createProduct(this.editingProduct).subscribe({
-        next: () => {
-          this.showProductModal = false;
-          this.loadProducts();
-        }
-      });
-    }
+      }
+    });
   }
 
   deleteProduct(id: number): void {
     if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
       this.productService.deleteProduct(id).subscribe({
-        next: () => this.loadProducts()
+        next: () => this.loadProducts(),
+        error: (err) => {
+          console.error(err);
+          alert('تعذر حذف المنتج، تأكد من صلاحيات الأدمن');
+        }
       });
     }
   }
@@ -280,32 +392,43 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   saveOffer(): void {
-    if (!this.editingOffer.title) {
+    if (!this.editingOffer.title || !this.editingOffer.title.trim()) {
       alert('يرجى كتابة عنوان العرض');
       return;
     }
 
-    if (this.editingOffer.id) {
-      this.offersService.updateOffer(this.editingOffer.id, this.editingOffer).subscribe({
-        next: () => {
-          this.showOfferModal = false;
-          this.loadOffers();
+    this.savingOffer = true;
+
+    const request$ = this.editingOffer.id
+      ? this.offersService.updateOffer(this.editingOffer.id, this.editingOffer)
+      : this.offersService.createOffer(this.editingOffer);
+
+    request$.subscribe({
+      next: () => {
+        this.savingOffer = false;
+        this.showOfferModal = false;
+        this.loadOffers();
+      },
+      error: (err) => {
+        this.savingOffer = false;
+        console.error('Error saving offer:', err);
+        if (err.status === 401) {
+          alert('انتهت جلسة تسجيل الدخول للأدمن. يرجى تسجيل الدخول بحساب amary212005@gmail.com');
+        } else {
+          alert('تعذر حفظ العرض: ' + (err.error?.message || err.message || 'خطأ في الاتصال'));
         }
-      });
-    } else {
-      this.offersService.createOffer(this.editingOffer).subscribe({
-        next: () => {
-          this.showOfferModal = false;
-          this.loadOffers();
-        }
-      });
-    }
+      }
+    });
   }
 
   deleteOffer(id: number): void {
     if (confirm('هل أنت متأكد من حذف هذا العرض؟')) {
       this.offersService.deleteOffer(id).subscribe({
-        next: () => this.loadOffers()
+        next: () => this.loadOffers(),
+        error: (err) => {
+          console.error(err);
+          alert('تعذر حذف العرض');
+        }
       });
     }
   }
