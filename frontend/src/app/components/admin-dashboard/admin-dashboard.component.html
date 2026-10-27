@@ -641,35 +641,60 @@
               <input type="text" [(ngModel)]="editingOffer.badgeText" class="cyber-input" placeholder="مثال: عرض خاص" />
             </div>
 
-            <!-- Direct Image Upload Zone for Offers -->
+            <!-- Multi-Image Upload Section for Offers -->
             <div class="form-group full-width">
-              <label>صورة العرض</label>
-              <input type="file" #offerFileInput (change)="onOfferImageSelected($event)" accept="image/*" style="display: none;" />
+              <div class="section-label-row">
+                <label>صور العرض (يمكنك رفع أكثر من صورة)</label>
+                @if (offerImages.length > 0) {
+                  <span class="count-pill">{{ offerImages.length }} صورة</span>
+                }
+              </div>
+              
+              <input type="file" #offerFilesInput (change)="onOfferImagesSelected($event)" accept="image/*" multiple style="display: none;" />
 
-              @if (editingOffer.imageUrl) {
-                <div class="image-preview-container">
-                  <img [src]="editingOffer.imageUrl" alt="Preview" class="preview-thumbnail" />
-                  <div class="preview-actions">
-                    <button type="button" class="btn-change-image" (click)="offerFileInput.click()">تغيير الصورة</button>
-                    <button type="button" class="btn-remove-image" (click)="removeOfferImage()">إزالة</button>
-                  </div>
+              <!-- Upload Button / Dropzone -->
+              <div class="upload-dropzone" (click)="offerFilesInput.click()">
+                <div class="dropzone-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
                 </div>
-              } @else {
-                <div class="upload-dropzone" (click)="offerFileInput.click()">
-                  <div class="dropzone-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                      <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                  </div>
-                  <span class="dropzone-text">انقر لاختيار ورفع صورة العرض</span>
-                  <span class="dropzone-sub">يدعم JPG, PNG, WebP</span>
+                <span class="dropzone-text">انقر لاختيار صورة أو عدة صور للعرض</span>
+                <span class="dropzone-sub">يتم ضغط الصور تلقائياً لسرعة التحميل الفائقة</span>
+              </div>
+
+              <!-- Multi-Image Preview Gallery Grid -->
+              @if (offerImages.length > 0) {
+                <div class="multi-images-grid">
+                  @for (img of offerImages; track $index) {
+                    <div class="image-gallery-item" [class.is-primary]="img === editingOffer.imageUrl">
+                      <img [src]="img" alt="Offer Image" class="gallery-thumb" />
+                      
+                      @if (img === editingOffer.imageUrl) {
+                        <span class="primary-badge">الرئيسية</span>
+                      } @else {
+                        <button type="button" class="btn-set-primary" (click)="setPrimaryOfferImage(img)" title="تعيين كصورة رئيسية">
+                          اجعلها رئيسية
+                        </button>
+                      }
+
+                      <button type="button" class="btn-delete-img" (click)="removeOfferImageAt($index)" title="حذف الصورة">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  }
                 </div>
               }
 
+              <!-- Fallback Direct URL input -->
               <div class="direct-url-fallback">
-                <input type="text" [(ngModel)]="editingOffer.imageUrl" class="cyber-input url-input" placeholder="أو الصق رابط صورة مباشر هنا (https://...)" />
+                <input type="text" #offerUrlInput (keyup.enter)="addOfferImageFromUrl(offerUrlInput.value); offerUrlInput.value = ''" class="cyber-input url-input" placeholder="أو الصق رابط صورة واضغط Enter لإضافتها" />
+                <button type="button" class="btn-add-url" (click)="addOfferImageFromUrl(offerUrlInput.value); offerUrlInput.value = ''">إضافة</button>
               </div>
             </div>
 

@@ -72,6 +72,10 @@
           <div class="product-card glass-panel">
             <div class="card-image-box">
               <img [src]="getActiveImage(product)" [alt]="product.name" class="product-img" loading="lazy" />
+              <div class="card-brand-watermark">
+                <img src="logo.png" alt="3mmar Store" class="watermark-logo" />
+                <span class="watermark-text">3mmar $tore</span>
+              </div>
               <div class="badges-row">
                 <span class="badge-cat">{{ product.category }}</span>
                 @if (product.isAvailable) {

@@ -38,6 +38,7 @@ export interface Offer {
   description: string;
   badgeText: string;
   imageUrl?: string;
+  images?: string[];
   actionUrl?: string;
   isActive: boolean;
 }

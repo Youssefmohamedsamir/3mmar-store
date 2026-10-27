@@ -48,6 +48,7 @@ export class AdminDashboardComponent implements OnInit {
   loadingOffers = false;
   showOfferModal = false;
   savingOffer = false;
+  offerImages: string[] = [];
   editingOffer: Partial<Offer> = {
     badgeText: 'عرض خاص',
     isActive: true
@@ -180,11 +181,49 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  async onOfferImageSelected(event: any): Promise<void> {
-    const file = event.target?.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const compressed = await this.compressImage(file);
-      this.editingOffer.imageUrl = compressed;
+  async onOfferImagesSelected(event: any): Promise<void> {
+    const files: FileList | null = event.target?.files;
+    if (!files || files.length === 0) return;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        const compressedBase64 = await this.compressImage(file);
+        if (compressedBase64 && !this.offerImages.includes(compressedBase64)) {
+          this.offerImages.push(compressedBase64);
+        }
+      }
+    }
+
+    if (!this.editingOffer.imageUrl && this.offerImages.length > 0) {
+      this.editingOffer.imageUrl = this.offerImages[0];
+    }
+    event.target.value = '';
+  }
+
+  setPrimaryOfferImage(img: string): void {
+    this.editingOffer.imageUrl = img;
+    const idx = this.offerImages.indexOf(img);
+    if (idx > 0) {
+      this.offerImages.splice(idx, 1);
+      this.offerImages.unshift(img);
+    }
+  }
+
+  removeOfferImageAt(index: number): void {
+    const removed = this.offerImages.splice(index, 1)[0];
+    if (this.editingOffer.imageUrl === removed) {
+      this.editingOffer.imageUrl = this.offerImages[0] || '';
+    }
+  }
+
+  addOfferImageFromUrl(url: string): void {
+    const clean = url?.trim();
+    if (clean && !this.offerImages.includes(clean)) {
+      this.offerImages.push(clean);
+      if (!this.editingOffer.imageUrl) {
+        this.editingOffer.imageUrl = clean;
+      }
     }
   }
 
@@ -195,6 +234,7 @@ export class AdminDashboardComponent implements OnInit {
 
   removeOfferImage(): void {
     this.editingOffer.imageUrl = '';
+    this.offerImages = [];
   }
 
   updateAccountCredentials(): void {
@@ -379,11 +419,13 @@ export class AdminDashboardComponent implements OnInit {
 
   // Offer Actions
   openCreateOffer(): void {
+    this.offerImages = [];
     this.editingOffer = {
       title: '',
       description: '',
       badgeText: 'عرض حصري',
       imageUrl: '',
+      images: [],
       actionUrl: '#products',
       isActive: true
     };
@@ -392,6 +434,9 @@ export class AdminDashboardComponent implements OnInit {
 
   openEditOffer(offer: Offer): void {
     this.editingOffer = { ...offer };
+    this.offerImages = offer.images && offer.images.length > 0
+      ? [...offer.images]
+      : (offer.imageUrl ? [offer.imageUrl] : []);
     this.showOfferModal = true;
   }
 
@@ -403,14 +448,24 @@ export class AdminDashboardComponent implements OnInit {
 
     this.savingOffer = true;
 
+    const imagesToSave = [...this.offerImages];
+    const primaryImg = this.editingOffer.imageUrl || (imagesToSave.length > 0 ? imagesToSave[0] : 'logo.png');
+
+    const payload: Partial<Offer> = {
+      ...this.editingOffer,
+      imageUrl: primaryImg,
+      images: imagesToSave
+    };
+
     const request$ = this.editingOffer.id
-      ? this.offersService.updateOffer(this.editingOffer.id, this.editingOffer)
-      : this.offersService.createOffer(this.editingOffer);
+      ? this.offersService.updateOffer(this.editingOffer.id, payload)
+      : this.offersService.createOffer(payload);
 
     request$.subscribe({
       next: () => {
         this.savingOffer = false;
         this.showOfferModal = false;
+        this.offerImages = [];
         this.loadOffers();
       },
       error: (err) => {

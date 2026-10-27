@@ -24,7 +24,7 @@ public class ProductsController : ControllerBase
         [FromQuery] string? search,
         [FromQuery] bool? availableOnly)
     {
-        var query = _context.Products.AsQueryable();
+        var query = _context.Products.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(category) && !category.Equals("All", StringComparison.OrdinalIgnoreCase))
         {

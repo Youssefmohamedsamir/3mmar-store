@@ -27,11 +27,29 @@
       <div class="offers-grid">
         @for (offer of offers; track offer.id) {
           <div class="offer-card glass-panel">
-            @if (offer.imageUrl) {
-              <div class="offer-image-box">
-                <img [src]="offer.imageUrl" [alt]="offer.title" class="offer-img" />
+            <div class="offer-image-box">
+              <img [src]="getActiveImage(offer)" [alt]="offer.title" class="offer-img" />
+              <div class="card-brand-watermark">
+                <img src="logo.png" alt="3mmar Store" class="watermark-logo" />
+                <span class="watermark-text">3mmar $tore</span>
+              </div>
+            </div>
+
+            <!-- Multiple images thumbnails bar if more than 1 image exists -->
+            @if (offer.images && offer.images.length > 1) {
+              <div class="card-thumbnails-strip">
+                @for (img of offer.images; track $index) {
+                  <img
+                    [src]="img"
+                    class="card-strip-thumb"
+                    [class.active]="getActiveImage(offer) === img"
+                    (click)="selectImage(offer, img); $event.stopPropagation()"
+                    alt="Offer thumbnail"
+                  />
+                }
               </div>
             }
+
             <div class="offer-content">
               <span class="offer-tag">{{ offer.badgeText }}</span>
               <h3 class="offer-title">{{ offer.title }}</h3>

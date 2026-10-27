@@ -9,10 +9,11 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://localhost:5000");
 
-// Add Database Context
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=amarstore.db";
+// Add Database Context (Microsoft SQL Server)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? "Server=localhost;Database=AmarStoreDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseSqlServer(connectionString));
 
 // Register Services
 builder.Services.AddScoped<ITokenService, TokenService>();

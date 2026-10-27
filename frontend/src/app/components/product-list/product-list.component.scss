@@ -193,6 +193,39 @@
     align-items: center;
     justify-content: space-between;
     pointer-events: none;
+    z-index: 3;
+  }
+
+  .card-brand-watermark {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(6, 9, 14, 0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(0, 230, 118, 0.3);
+    border-radius: 20px;
+    padding: 2.5px 8px 2.5px 6px;
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+
+    .watermark-logo {
+      width: 17px;
+      height: 17px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 4px rgba(0, 230, 118, 0.4));
+    }
+
+    .watermark-text {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      letter-spacing: 0.3px;
+    }
   }
 
   .badge-cat {

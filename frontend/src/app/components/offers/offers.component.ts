@@ -13,11 +13,20 @@ import { OffersService } from '../../services/offers.service';
 export class OffersComponent implements OnInit {
   offers: Offer[] = [];
   loading = false;
+  activeImages: Map<number, string> = new Map();
 
   constructor(private offersService: OffersService) {}
 
   ngOnInit(): void {
     this.loadOffers();
+  }
+
+  getActiveImage(offer: Offer): string {
+    return this.activeImages.get(offer.id) || offer.imageUrl || (offer.images && offer.images.length > 0 ? offer.images[0] : 'logo.png');
+  }
+
+  selectImage(offer: Offer, img: string): void {
+    this.activeImages.set(offer.id, img);
   }
 
   loadOffers(): void {

@@ -7,6 +7,7 @@ public class Offer
     public string Description { get; set; } = string.Empty;
     public string BadgeText { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
+    public string ImagesJson { get; set; } = string.Empty;
     public string? ActionUrl { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

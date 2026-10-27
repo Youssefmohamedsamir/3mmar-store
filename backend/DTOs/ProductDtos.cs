@@ -47,6 +47,7 @@ public record OfferDto(
     string Description,
     string BadgeText,
     string? ImageUrl,
+    List<string>? Images,
     string? ActionUrl,
     bool IsActive
 );
@@ -56,6 +57,17 @@ public record CreateOfferRequest(
     string Description,
     string BadgeText,
     string? ImageUrl,
+    List<string>? Images,
+    string? ActionUrl,
+    bool IsActive
+);
+
+public record UpdateOfferRequest(
+    string Title,
+    string Description,
+    string BadgeText,
+    string? ImageUrl,
+    List<string>? Images,
     string? ActionUrl,
     bool IsActive
 );
