@@ -138,20 +138,34 @@ export class AdminDashboardComponent implements OnInit {
     const files: FileList | null = event.target?.files;
     if (!files || files.length === 0) return;
 
-    for (let i = 0; i < files.length; i++) {
+    if (this.productImages.length >= 10) {
+      alert('الحد الأقصى المسموح به هو 10 صور للمنتج الواحد.');
+      event.target.value = '';
+      return;
+    }
+
+    const availableSlots = 10 - this.productImages.length;
+    const countToProcess = Math.min(files.length, availableSlots);
+
+    for (let i = 0; i < countToProcess; i++) {
       const file = files[i];
       if (file.type.startsWith('image/')) {
         const compressedBase64 = await this.compressImage(file);
         if (compressedBase64 && !this.productImages.includes(compressedBase64)) {
-          this.productImages.push(compressedBase64);
+          if (this.productImages.length < 10) {
+            this.productImages.push(compressedBase64);
+          }
         }
       }
+    }
+
+    if (files.length > availableSlots) {
+      alert(`تم رفع ${countToProcess} صور للوصول إلى الحد الأقصى (10 صور).`);
     }
 
     if (!this.editingProduct.imageUrl && this.productImages.length > 0) {
       this.editingProduct.imageUrl = this.productImages[0];
     }
-    // Reset file input value to allow re-uploading same file if desired
     event.target.value = '';
   }
 
@@ -173,7 +187,14 @@ export class AdminDashboardComponent implements OnInit {
 
   addImageFromUrl(url: string): void {
     const clean = url?.trim();
-    if (clean && !this.productImages.includes(clean)) {
+    if (!clean) return;
+
+    if (this.productImages.length >= 10) {
+      alert('الحد الأقصى المسموح به هو 10 صور للمنتج.');
+      return;
+    }
+
+    if (!this.productImages.includes(clean)) {
       this.productImages.push(clean);
       if (!this.editingProduct.imageUrl) {
         this.editingProduct.imageUrl = clean;
@@ -185,14 +206,29 @@ export class AdminDashboardComponent implements OnInit {
     const files: FileList | null = event.target?.files;
     if (!files || files.length === 0) return;
 
-    for (let i = 0; i < files.length; i++) {
+    if (this.offerImages.length >= 10) {
+      alert('الحد الأقصى المسموح به هو 10 صور للعرض الواحد.');
+      event.target.value = '';
+      return;
+    }
+
+    const availableSlots = 10 - this.offerImages.length;
+    const countToProcess = Math.min(files.length, availableSlots);
+
+    for (let i = 0; i < countToProcess; i++) {
       const file = files[i];
       if (file.type.startsWith('image/')) {
         const compressedBase64 = await this.compressImage(file);
         if (compressedBase64 && !this.offerImages.includes(compressedBase64)) {
-          this.offerImages.push(compressedBase64);
+          if (this.offerImages.length < 10) {
+            this.offerImages.push(compressedBase64);
+          }
         }
       }
+    }
+
+    if (files.length > availableSlots) {
+      alert(`تم رفع ${countToProcess} صور للوصول إلى الحد الأقصى (10 صور).`);
     }
 
     if (!this.editingOffer.imageUrl && this.offerImages.length > 0) {
@@ -219,7 +255,14 @@ export class AdminDashboardComponent implements OnInit {
 
   addOfferImageFromUrl(url: string): void {
     const clean = url?.trim();
-    if (clean && !this.offerImages.includes(clean)) {
+    if (!clean) return;
+
+    if (this.offerImages.length >= 10) {
+      alert('الحد الأقصى المسموح به هو 10 صور للعرض.');
+      return;
+    }
+
+    if (!this.offerImages.includes(clean)) {
       this.offerImages.push(clean);
       if (!this.editingOffer.imageUrl) {
         this.editingOffer.imageUrl = clean;

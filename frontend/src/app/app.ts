@@ -8,7 +8,6 @@ import { OffersComponent } from './components/offers/offers.component';
 import { MediaComponent } from './components/media/media.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
-import { FooterComponent } from './components/footer/footer.component';
 import { AnalyticsService } from './services/analytics.service';
 import { SettingsService } from './services/settings.service';
 import { ProductService } from './services/product.service';
@@ -27,8 +26,7 @@ import { PwaService } from './services/pwa.service';
     OffersComponent,
     MediaComponent,
     AuthModalComponent,
-    AdminDashboardComponent,
-    FooterComponent
+    AdminDashboardComponent
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss']

@@ -31,8 +31,8 @@
 /* Prominent Crocodile Official Logo Box */
 .logo-wrapper {
   position: relative;
-  width: 220px;
-  height: 160px;
+  width: 270px;
+  height: 195px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,19 +40,19 @@
 
 .logo-box {
   position: relative;
-  width: 200px;
-  height: 145px;
-  border-radius: 20px;
+  width: 250px;
+  height: 180px;
+  border-radius: 24px;
   background: #091017;
-  border: 2px solid rgba(0, 230, 118, 0.55);
+  border: 2.5px solid rgba(0, 230, 118, 0.65);
   overflow: hidden;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 230, 118, 0.35);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8), 0 0 45px rgba(0, 230, 118, 0.4);
   transition: all 0.3s ease;
 
   &:hover {
     border-color: #00E676;
-    transform: scale(1.03);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.85), 0 0 45px rgba(0, 230, 118, 0.5);
+    transform: scale(1.04);
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.9), 0 0 55px rgba(0, 230, 118, 0.55);
   }
 }
 
@@ -144,28 +144,29 @@
 .btn-start {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #00E676;
   color: #06090e;
-  font-size: 0.92rem;
-  font-weight: 800;
-  padding: 8px 22px;
-  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.35);
+  transition: all 0.22s ease;
+  box-shadow: 0 2px 10px rgba(0, 230, 118, 0.3);
+  white-space: nowrap !important;
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     stroke: #06090e;
     transition: transform 0.2s ease;
   }
 
   &:hover {
     background: #00f5a0;
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     svg {
       transform: translateY(2px);
     }
@@ -175,20 +176,21 @@
 .btn-download-app {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: rgba(14, 23, 34, 0.85);
-  border: 1px solid rgba(0, 230, 118, 0.35);
+  border: 1px solid rgba(0, 230, 118, 0.3);
   color: #f1f5f9;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 8px 18px;
-  border-radius: 10px;
+  padding: 6px 14px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.22s ease;
+  white-space: nowrap !important;
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     stroke: #00E676;
   }
 
