@@ -3,12 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AnalyticsSummary } from '../models/models';
 import { AuthService } from './auth.service';
+import { getApiBaseUrl } from './api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private readonly apiUrl = 'http://localhost:5000/api/analytics';
+  private get apiUrl(): string {
+    return `${getApiBaseUrl()}/analytics`;
+  }
 
   constructor(
     private http: HttpClient,

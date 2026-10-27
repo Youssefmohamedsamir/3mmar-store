@@ -2,12 +2,15 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, timeout, catchError, of, throwError } from 'rxjs';
 import { User, AuthResponse } from '../models/models';
+import { getApiBaseUrl } from './api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:5000/api/auth';
+  private get apiUrl(): string {
+    return `${getApiBaseUrl()}/auth`;
+  }
   private readonly tokenKey = '3mmar_token';
   private readonly userKey = '3mmar_user';
 

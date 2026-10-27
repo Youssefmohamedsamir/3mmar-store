@@ -3,12 +3,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
 import { Product } from '../models/models';
 import { AuthService } from './auth.service';
+import { getApiBaseUrl } from './api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private readonly apiUrl = 'http://localhost:5000/api/products';
+  private get apiUrl(): string {
+    return `${getApiBaseUrl()}/products`;
+  }
   private cache = new Map<string, Product[]>();
 
   constructor(

@@ -3,12 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Offer } from '../models/models';
 import { AuthService } from './auth.service';
+import { getApiBaseUrl } from './api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OffersService {
-  private readonly apiUrl = 'http://localhost:5000/api/offers';
+  private get apiUrl(): string {
+    return `${getApiBaseUrl()}/offers`;
+  }
 
   constructor(
     private http: HttpClient,

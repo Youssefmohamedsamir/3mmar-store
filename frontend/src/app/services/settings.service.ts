@@ -3,12 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { StoreSettings } from '../models/models';
 import { AuthService } from './auth.service';
+import { getApiBaseUrl } from './api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
-  private readonly apiUrl = 'http://localhost:5000/api/settings';
+  private get apiUrl(): string {
+    return `${getApiBaseUrl()}/settings`;
+  }
 
   settings = signal<StoreSettings>({
     storeName: '3mmar Store',
