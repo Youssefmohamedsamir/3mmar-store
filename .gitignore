@@ -24,6 +24,10 @@ sql_data/
 *.ldf
 *.db
 
+## Deployment Artifacts
+publish_bundle/
+*.zip
+
 ## IDE
 .vs/
 .idea/
