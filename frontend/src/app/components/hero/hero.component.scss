@@ -28,11 +28,11 @@
   z-index: 10;
 }
 
-/* Prominent Crocodile Logo Box */
+/* Prominent Crocodile Official Logo Box */
 .logo-wrapper {
   position: relative;
-  width: 165px;
-  height: 165px;
+  width: 220px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,19 +40,19 @@
 
 .logo-box {
   position: relative;
-  width: 150px;
-  height: 150px;
-  border-radius: 26px;
+  width: 200px;
+  height: 145px;
+  border-radius: 20px;
   background: #091017;
   border: 2px solid rgba(0, 230, 118, 0.55);
   overflow: hidden;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 230, 118, 0.3);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 230, 118, 0.35);
   transition: all 0.3s ease;
 
   &:hover {
     border-color: #00E676;
-    transform: scale(1.04);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 230, 118, 0.45);
+    transform: scale(1.03);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.85), 0 0 45px rgba(0, 230, 118, 0.5);
   }
 }
 
@@ -60,7 +60,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.18);
   transition: transform 0.4s ease;
 }
 
