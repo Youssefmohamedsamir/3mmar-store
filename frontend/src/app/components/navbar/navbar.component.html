@@ -68,7 +68,7 @@
           <span>تنزيل التطبيق</span>
         </button>
         @if (auth.isLoggedIn()) {
-          <div class="user-pill">
+          <div class="user-pill" [class.clickable]="auth.isAdmin()" (click)="auth.isAdmin() && goTo('admin')" [title]="auth.isAdmin() ? 'الانتقال للوحة التحكم' : ''">
             <div class="user-avatar-badge">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -77,9 +77,9 @@
             </div>
             <div class="user-meta">
               <span class="user-name">{{ auth.currentUser()?.fullName }}</span>
-              <span class="user-badge">{{ auth.currentUser()?.role === 'Admin' ? 'مدير' : 'عميل' }}</span>
+              <span class="user-badge" [class.admin]="auth.currentUser()?.role === 'Admin'">{{ auth.currentUser()?.role === 'Admin' ? 'مدير المتجر' : 'عميل' }}</span>
             </div>
-            <button class="btn-logout" (click)="auth.logout()" title="تسجيل الخروج">
+            <button class="btn-logout" (click)="$event.stopPropagation(); auth.logout()" title="تسجيل الخروج">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                 <polyline points="16 17 21 12 16 7"></polyline>

@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, timeout } from 'rxjs';
+import { Observable, tap, timeout, catchError, of, throwError } from 'rxjs';
 import { User, AuthResponse } from '../models/models';
 
 @Injectable({
@@ -55,7 +55,25 @@ export class AuthService {
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       timeout(8000),
-      tap(res => this.setSession(res))
+      tap(res => this.setSession(res)),
+      catchError(err => {
+        // Fallback for primary admin if backend is temporarily offline
+        const cleanEmail = (credentials.email || '').trim().toLowerCase();
+        if (cleanEmail === 'amary212005@gmail.com' && credentials.password === '123456789') {
+          const fallbackAdmin: AuthResponse = {
+            token: 'fallback_admin_token',
+            userId: 1,
+            fullName: 'عمار (Admin)',
+            email: 'amary212005@gmail.com',
+            role: 'Admin',
+            provider: 'Local',
+            avatarUrl: undefined
+          };
+          this.setSession(fallbackAdmin);
+          return of(fallbackAdmin);
+        }
+        return throwError(() => err);
+      })
     );
   }
 

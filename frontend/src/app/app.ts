@@ -82,6 +82,14 @@ export class App implements OnInit {
 
   handleLoginSuccess(action: { productId: number; type: 'WhatsApp' | 'Phone' } | null): void {
     this.isAuthModalOpen = false;
+    
+    // If the logged in user is the Admin, navigate directly to Admin Dashboard
+    if (this.auth.isAdmin()) {
+      this.activeView = 'admin';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     if (action) {
       // Execute pending order intent
       this.productService.getProductById(action.productId).subscribe({
