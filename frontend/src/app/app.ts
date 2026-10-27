@@ -4,6 +4,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { HeroComponent } from './components/hero/hero.component';
 import { CategoryBarComponent } from './components/category-bar/category-bar.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { OffersComponent } from './components/offers/offers.component';
 import { MediaComponent } from './components/media/media.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -14,6 +15,8 @@ import { SettingsService } from './services/settings.service';
 import { ProductService } from './services/product.service';
 import { AuthService } from './services/auth.service';
 import { PwaService } from './services/pwa.service';
+import { ToastService } from './services/toast.service';
+import { Product } from './models/models';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +27,7 @@ import { PwaService } from './services/pwa.service';
     HeroComponent,
     CategoryBarComponent,
     ProductListComponent,
+    ProductDetailComponent,
     OffersComponent,
     MediaComponent,
     FooterComponent,
@@ -37,7 +41,9 @@ export class App implements OnInit {
   selectedCategory: string = 'IPhone';
   isAuthModalOpen = false;
   pendingOrderAction: { productId: number; type: 'WhatsApp' | 'Phone' } | null = null;
-  activeView: 'home' | 'admin' = 'home';
+  activeView: 'home' | 'admin' | 'product-detail' = 'home';
+  selectedProduct: Product | null = null;
+  allProductsList: Product[] = [];
 
   categoryTabs = [
     { id: 'IPhone', name: 'أجهزة iPhone', subtitle: 'Apple' },
@@ -51,12 +57,36 @@ export class App implements OnInit {
     private settingsService: SettingsService,
     private productService: ProductService,
     public auth: AuthService,
-    public pwa: PwaService
+    public pwa: PwaService,
+    public toast: ToastService
   ) {}
 
   ngOnInit(): void {
     // Log site visitor in backend
     this.analyticsService.logVisit(window.location.pathname).subscribe();
+    this.loadAllProducts();
+  }
+
+  loadAllProducts(): void {
+    this.productService.getProducts().subscribe({
+      next: (data) => {
+        this.allProductsList = data;
+      }
+    });
+  }
+
+  handleViewProduct(product: Product): void {
+    this.selectedProduct = product;
+    this.activeView = 'product-detail';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  handleBackFromDetail(): void {
+    this.activeView = 'home';
+    setTimeout(() => {
+      const el = document.getElementById('products-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
   }
 
   handleStart(): void {

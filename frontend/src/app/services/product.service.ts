@@ -77,15 +77,6 @@ export class ProductService {
 
   getProducts(category?: string, search?: string, forceRefresh: boolean = false): Observable<Product[]> {
     const cacheKey = category || 'All';
-    
-    // Return cached data immediately if available and no search
-    if (!search && !forceRefresh) {
-      const cached = this.getCached(cacheKey);
-      if (cached && cached.length > 0) {
-        return of(cached);
-      }
-    }
-
     let params = new HttpParams();
     if (category && category !== 'All') {
       params = params.set('category', category);

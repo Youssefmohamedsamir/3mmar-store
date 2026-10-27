@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-auth-modal',
@@ -25,7 +26,10 @@ export class AuthModalComponent {
   email = '';
   password = '';
 
-  constructor(private auth: AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private toast: ToastService
+  ) {}
 
   onClose(): void {
     this.errorMessage = '';
@@ -48,18 +52,20 @@ export class AuthModalComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    const mockEmail = provider === 'Google' ? 'google.user@example.com' : 'facebook.user@example.com';
-    const mockName = provider === 'Google' ? 'مستخدم جوجل' : 'مستخدم فيسبوك';
+    const randomSuffix = Math.floor(Math.random() * 899999 + 100000);
+    const userEmail = this.email?.trim() || `${provider.toLowerCase()}.user_${randomSuffix}@gmail.com`;
+    const userName = this.fullName?.trim() || (provider === 'Google' ? 'عميل جوجل' : 'عميل فيسبوك');
 
     this.auth.socialLogin({
       provider,
-      providerId: `${provider.toLowerCase()}_${Date.now()}`,
-      email: mockEmail,
-      fullName: mockName,
+      providerId: `${provider.toLowerCase()}_${Date.now()}_${randomSuffix}`,
+      email: userEmail,
+      fullName: userName,
       avatarUrl: ''
     }).subscribe({
       next: () => {
         this.loading = false;
+        this.toast.showDone('Done ✓', `مرحباً بك ${userName}! تم الدخول بنجاح`);
         this.loginSuccess.emit(this.pendingAction);
         this.onClose();
       },
@@ -81,8 +87,9 @@ export class AuthModalComponent {
 
     if (this.mode === 'login') {
       this.auth.login({ email: this.email, password: this.password }).subscribe({
-        next: () => {
+        next: (res) => {
           this.loading = false;
+          this.toast.showDone('Done ✓', `مرحباً بك ${res.fullName}! تم تسجيل الدخول بنجاح`);
           this.loginSuccess.emit(this.pendingAction);
           this.onClose();
         },
@@ -98,8 +105,9 @@ export class AuthModalComponent {
         return;
       }
       this.auth.register({ fullName: this.fullName, email: this.email, password: this.password }).subscribe({
-        next: () => {
+        next: (res) => {
           this.loading = false;
+          this.toast.showDone('Done ✓', `أهلاً بك يا ${res.fullName}! تم إنشاء حسابك بنجاح`);
           this.loginSuccess.emit(this.pendingAction);
           this.onClose();
         },

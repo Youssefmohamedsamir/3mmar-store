@@ -1,4 +1,7 @@
 <div class="app-layout">
+  <!-- Dark Subtle Crocodile Watermark Background Texture -->
+  <div class="croc-watermark-bg"></div>
+
   <!-- Top Navigation Bar -->
   <app-navbar
     (openAuthModal)="isAuthModalOpen = true"
@@ -9,6 +12,14 @@
     @if (activeView === 'admin' && auth.isAdmin()) {
       <!-- Dedicated Admin Dashboard View -->
       <app-admin-dashboard></app-admin-dashboard>
+    } @else if (activeView === 'product-detail' && selectedProduct) {
+      <!-- Dedicated High-End Product Details Page View as explicitly requested -->
+      <app-product-detail
+        [product]="selectedProduct"
+        [allProducts]="allProductsList"
+        (back)="handleBackFromDetail()"
+        (selectRelated)="handleViewProduct($event)"
+      ></app-product-detail>
     } @else {
       <!-- Main Home Store Flow -->
       <!-- 1. Hero Section with Animated Logo & "لنبدأ" Button -->
@@ -28,6 +39,7 @@
         <app-product-list
           [selectedCategory]="selectedCategory"
           (categoryChange)="handleCategoryChange($event)"
+          (viewProduct)="handleViewProduct($event)"
           (requireAuth)="handleRequireAuth($event)"
           (openAdmin)="handleNavigate('admin')"
         ></app-product-list>
@@ -41,6 +53,28 @@
   <!-- Professional Footer: Visible ONLY on the Home Page as requested -->
   @if (activeView === 'home') {
     <app-footer></app-footer>
+  }
+
+  <!-- Floating Modern Neon Green "Done ✓" Confirmation Toast -->
+  @if (toast.activeToast(); as activeToast) {
+    <div class="global-done-toast animate-toast-pop" [class.toast-error]="activeToast.type === 'error'" (click)="toast.dismiss()">
+      <div class="done-icon-glow">
+        @if (activeToast.type === 'done') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        }
+      </div>
+      <div class="done-text-box">
+        <span class="done-title">{{ activeToast.title }}</span>
+        <span class="done-msg">{{ activeToast.message }}</span>
+      </div>
+    </div>
   }
 
   <!-- Login/Register & Social Auth Modal -->

@@ -6,6 +6,7 @@ import { ProductService } from '../../services/product.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-product-list',
@@ -17,6 +18,7 @@ import { AnalyticsService } from '../../services/analytics.service';
 export class ProductListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() selectedCategory: string = 'IPhone';
   @Output() categoryChange = new EventEmitter<string>();
+  @Output() viewProduct = new EventEmitter<Product>();
   @Output() requireAuth = new EventEmitter<{ productId: number; type: 'WhatsApp' | 'Phone' }>();
   @Output() openAdmin = new EventEmitter<void>();
 
@@ -79,6 +81,7 @@ export class ProductListComponent implements OnInit, OnChanges, OnDestroy {
   openProductDetails(product: Product): void {
     this.selectedProduct = product;
     this.modalActiveImage = this.getActiveImage(product);
+    this.viewProduct.emit(product);
   }
 
   closeProductDetails(): void {
@@ -111,7 +114,8 @@ export class ProductListComponent implements OnInit, OnChanges, OnDestroy {
     private productService: ProductService,
     public settings: SettingsService,
     public auth: AuthService,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -189,25 +193,22 @@ export class ProductListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   handleOrder(product: Product, type: 'WhatsApp' | 'Phone'): void {
-    if (!this.auth.isLoggedIn()) {
-      this.requireAuth.emit({ productId: product.id, type });
-      return;
-    }
-
     this.analytics.recordOrderIntent(product.id, type).subscribe();
 
     const currentSettings = this.settings.settings();
+    const user = this.auth.currentUser();
+    const clientName = user?.fullName ? ` من العميل: ${user.fullName}` : '';
 
     if (type === 'WhatsApp') {
-      const cleanPhone = (currentSettings.whatsApp || '201000000000').replace(/[^0-9]/g, '');
-      const user = this.auth.currentUser();
-      const clientName = user?.fullName ? ` من العميل: ${user.fullName}` : '';
-      const message = `مرحباً متجر عمار، أود طلب المنتج:\n*${product.name}*\nالسعر: ${product.price.toLocaleString()} ج.م\nالقسم: ${product.category}${clientName}`;
+      const cleanPhone = (currentSettings.whatsApp || '01044858440').replace(/[^0-9]/g, '');
+      const message = `مرحباً متجر 3mmar $tore، أود طلب المنتج:\n*${product.name}*\nالسعر: ${product.price.toLocaleString()} ج.م\nالقسم: ${product.category}${clientName}`;
       const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
+      this.toast.showDone('Done ✓', 'تم تجهيز وتوجيه طلبك إلى واتساب المتجر بنجاح');
     } else {
-      const cleanPhone = (currentSettings.phone || '+201000000000').trim();
+      const cleanPhone = (currentSettings.phone || '01044858440').trim();
       window.location.href = `tel:${cleanPhone}`;
+      this.toast.showDone('Done ✓', 'جاري تحويلك للاتصال الهاتفي بمتجر عمار');
     }
   }
 
