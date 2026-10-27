@@ -862,6 +862,13 @@
               <span>العرض مفعل ونشط في صفحة العروض</span>
             </label>
           </div>
+
+          <div class="form-group full-width checkbox-row">
+            <label class="custom-checkbox limited-checkbox">
+              <input type="checkbox" [(ngModel)]="editingOffer.isLimitedTime" />
+              <span class="limited-text">⏳ عرض لفترة محدودة (Limited Time Offer)</span>
+            </label>
+          </div>
         </div>
 
         <!-- Fixed Footer -->
@@ -963,6 +970,36 @@
           <button class="btn-secondary" (click)="showSaleModal = false" [disabled]="savingSale">إلغاء</button>
         </div>
       </div>
+    </div>
+  }
+
+  <!-- Floating Professional Toast Notification -->
+  @if (toastMsg) {
+    <div class="admin-toast-banner animate-slide-up" [class.toast-error]="toastType === 'error'">
+      <div class="toast-indicator"></div>
+      <div class="toast-icon-wrap">
+        @if (toastType === 'success') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        }
+      </div>
+      <div class="toast-content-box">
+        <span class="toast-status-title">{{ toastType === 'success' ? 'نجاح العملية ✓' : 'تنبيه خطأ' }}</span>
+        <span class="toast-detail-msg">{{ toastMsg }}</span>
+      </div>
+      <button class="toast-dismiss-btn" (click)="toastMsg = ''" title="إغلاق">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
   }
 </section>

@@ -51,8 +51,25 @@ export class AdminDashboardComponent implements OnInit {
   offerImages: string[] = [];
   editingOffer: Partial<Offer> = {
     badgeText: 'عرض خاص',
-    isActive: true
+    isActive: true,
+    isLimitedTime: false
   };
+
+  // Toast Notification System
+  toastMsg = '';
+  toastType: 'success' | 'error' = 'success';
+  private toastTimer: any = null;
+
+  showToast(msg: string, type: 'success' | 'error' = 'success'): void {
+    this.toastMsg = msg;
+    this.toastType = type;
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
+    this.toastTimer = setTimeout(() => {
+      this.toastMsg = '';
+    }, 4000);
+  }
 
   // Sales / Earnings Recording
   showSaleModal = false;
@@ -474,16 +491,16 @@ export class AdminDashboardComponent implements OnInit {
         this.savingProduct = false;
         this.productImages = [];
         this.loadProducts();
+        this.showToast(isEditing ? 'تم تحديث المنتج بنجاح! Successfully Updated' : 'تم إضافة المنتج بنجاح! Successfully Created', 'success');
       },
       error: (err) => {
         this.savingProduct = false;
         this.products = prevProducts;
         console.error('Error saving product:', err);
-        if (err.status === 401) {
-          alert('انتهت جلسة تسجيل الدخول للأدمن أو تم رفض الصلاحية. يرجى تسجيل الدخول مجدداً بحساب amary212005@gmail.com');
-        } else {
-          alert('تعذر حفظ المنتج في السيرفر: ' + (err.error?.message || err.message || 'يرجى التحقق من الاتصال'));
-        }
+        const errorDetail = err.status === 401
+          ? 'انتهت صلاحية تسجيل الدخول للأدمن'
+          : (err.error?.message || err.message || 'خطأ في الاتصال');
+        this.showToast('تعذر حفظ المنتج: ' + errorDetail, 'error');
       }
     });
   }
@@ -497,11 +514,12 @@ export class AdminDashboardComponent implements OnInit {
       this.productService.deleteProduct(id).subscribe({
         next: () => {
           this.loadProducts();
+          this.showToast('تم حذف المنتج بنجاح! Successfully Deleted', 'success');
         },
         error: (err) => {
           this.products = prevProducts;
           console.error(err);
-          alert('تعذر حذف المنتج، تأكد من صلاحيات الأدمن');
+          this.showToast('تعذر حذف المنتج، يرجى المحاولة لاحقاً', 'error');
         }
       });
     }
@@ -517,13 +535,17 @@ export class AdminDashboardComponent implements OnInit {
       imageUrl: '',
       images: [],
       actionUrl: '#products',
-      isActive: true
+      isActive: true,
+      isLimitedTime: false
     };
     this.showOfferModal = true;
   }
 
   openEditOffer(offer: Offer): void {
-    this.editingOffer = { ...offer };
+    this.editingOffer = {
+      ...offer,
+      isLimitedTime: !!offer.isLimitedTime
+    };
     this.offerImages = offer.images && offer.images.length > 0
       ? [...offer.images]
       : (offer.imageUrl ? [offer.imageUrl] : []);
@@ -532,7 +554,7 @@ export class AdminDashboardComponent implements OnInit {
 
   saveOffer(): void {
     if (!this.editingOffer.title || !this.editingOffer.title.trim()) {
-      alert('يرجى كتابة عنوان العرض');
+      this.showToast('يرجى كتابة عنوان العرض', 'error');
       return;
     }
 
@@ -544,7 +566,8 @@ export class AdminDashboardComponent implements OnInit {
     const payload: Partial<Offer> = {
       ...this.editingOffer,
       imageUrl: primaryImg,
-      images: imagesToSave
+      images: imagesToSave,
+      isLimitedTime: !!this.editingOffer.isLimitedTime
     };
 
     // Optimistic update
@@ -562,7 +585,8 @@ export class AdminDashboardComponent implements OnInit {
         imageUrl: primaryImg,
         images: imagesToSave,
         actionUrl: payload.actionUrl || '#products',
-        isActive: payload.isActive ?? true
+        isActive: payload.isActive ?? true,
+        isLimitedTime: !!payload.isLimitedTime
       };
       this.offers = [tempOffer, ...this.offers];
     }
@@ -578,16 +602,16 @@ export class AdminDashboardComponent implements OnInit {
         this.savingOffer = false;
         this.offerImages = [];
         this.loadOffers();
+        this.showToast(isEditing ? 'تم تحديث العرض بنجاح! Successfully Updated' : 'تم إضافة العرض بنجاح! Successfully Created', 'success');
       },
       error: (err) => {
         this.savingOffer = false;
         this.offers = prevOffers;
         console.error('Error saving offer:', err);
-        if (err.status === 401) {
-          alert('انتهت جلسة تسجيل الدخول للأدمن. يرجى تسجيل الدخول بحساب amary212005@gmail.com');
-        } else {
-          alert('تعذر حفظ العرض: ' + (err.error?.message || err.message || 'خطأ في الاتصال'));
-        }
+        const errorDetail = err.status === 401
+          ? 'انتهت صلاحية تسجيل الدخول للأدمن'
+          : (err.error?.message || err.message || 'خطأ في الاتصال');
+        this.showToast('تعذر حفظ العرض: ' + errorDetail, 'error');
       }
     });
   }
@@ -598,11 +622,14 @@ export class AdminDashboardComponent implements OnInit {
       this.offers = this.offers.filter(o => o.id !== id);
 
       this.offersService.deleteOffer(id).subscribe({
-        next: () => this.loadOffers(),
+        next: () => {
+          this.loadOffers();
+          this.showToast('تم حذف العرض بنجاح! Successfully Deleted', 'success');
+        },
         error: (err) => {
           this.offers = prevOffers;
           console.error(err);
-          alert('تعذر حذف العرض');
+          this.showToast('تعذر حذف العرض', 'error');
         }
       });
     }
@@ -634,15 +661,15 @@ export class AdminDashboardComponent implements OnInit {
 
   saveSale(): void {
     if (!this.newSale.productName && !this.newSale.productId) {
-      alert('يرجى تحديد المنتج المباع');
+      this.showToast('يرجى تحديد المنتج المباع', 'error');
       return;
     }
     if (this.newSale.quantitySold <= 0) {
-      alert('يرجى إدخال كمية صحيحة (1 أو أكثر)');
+      this.showToast('يرجى إدخال كمية صحيحة (1 أو أكثر)', 'error');
       return;
     }
     if (this.newSale.salePrice < 0) {
-      alert('يرجى كتابة سعر بيع صحيح');
+      this.showToast('يرجى كتابة سعر بيع صحيح', 'error');
       return;
     }
 
@@ -653,11 +680,12 @@ export class AdminDashboardComponent implements OnInit {
         this.showSaleModal = false;
         this.loadSummary();
         this.loadProducts();
+        this.showToast('تم تسجيل عملية البيع واحتساب الأرباح بنجاح! Successfully Recorded', 'success');
       },
       error: (err) => {
         this.savingSale = false;
         console.error(err);
-        alert('تعذر تسجيل عملية البيع: ' + (err.error?.message || err.message || 'خطأ في الاتصال'));
+        this.showToast('تعذر تسجيل عملية البيع: ' + (err.error?.message || err.message || 'خطأ في الاتصال'), 'error');
       }
     });
   }
@@ -668,10 +696,11 @@ export class AdminDashboardComponent implements OnInit {
         next: () => {
           this.loadSummary();
           this.loadProducts();
+          this.showToast('تم إلغاء عملية البيع واسترجاع الكميات للمخزون! Successfully Restored', 'success');
         },
         error: (err) => {
           console.error(err);
-          alert('تعذر حذف عملية البيع');
+          this.showToast('تعذر حذف عملية البيع', 'error');
         }
       });
     }
@@ -685,10 +714,12 @@ export class AdminDashboardComponent implements OnInit {
       next: () => {
         this.savingSettings = false;
         this.saveSettingsSuccess = true;
+        this.showToast('تم حفظ إعدادات المتجر بنجاح! Successfully Saved', 'success');
         setTimeout(() => this.saveSettingsSuccess = false, 3500);
       },
       error: () => {
         this.savingSettings = false;
+        this.showToast('تعذر حفظ إعدادات المتجر', 'error');
       }
     });
   }

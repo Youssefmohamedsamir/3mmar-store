@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Product } from '../../models/models';
@@ -14,8 +14,9 @@ import { AnalyticsService } from '../../services/analytics.service';
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss']
 })
-export class ProductListComponent implements OnInit, OnChanges {
+export class ProductListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() selectedCategory: string = 'IPhone';
+  @Output() categoryChange = new EventEmitter<string>();
   @Output() requireAuth = new EventEmitter<{ productId: number; type: 'WhatsApp' | 'Phone' }>();
   @Output() openAdmin = new EventEmitter<void>();
 
@@ -25,6 +26,14 @@ export class ProductListComponent implements OnInit, OnChanges {
   activeImages: Map<number, string> = new Map();
   selectedProduct: Product | null = null;
   modalActiveImage: string = '';
+  private autoSlideTimer: any = null;
+
+  categoryFilterTabs = [
+    { id: 'IPhone', name: 'iPhone' },
+    { id: 'Android', name: 'Android' },
+    { id: 'Accessories', name: 'إكسسوارات' },
+    { id: 'Other', name: 'أجهزة أخرى' }
+  ];
 
   getImagesList(product: Product): string[] {
     if (product.images && product.images.length > 0) {
@@ -106,6 +115,37 @@ export class ProductListComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    this.loadProducts();
+    this.startAutoSlide();
+  }
+
+  ngOnDestroy(): void {
+    if (this.autoSlideTimer) {
+      clearInterval(this.autoSlideTimer);
+    }
+  }
+
+  private startAutoSlide(): void {
+    if (this.autoSlideTimer) {
+      clearInterval(this.autoSlideTimer);
+    }
+    this.autoSlideTimer = setInterval(() => {
+      for (const product of this.products) {
+        const list = this.getImagesList(product);
+        if (list.length > 1) {
+          const current = this.getActiveImage(product);
+          const currentIdx = list.indexOf(current);
+          const nextIdx = (currentIdx + 1) % list.length;
+          this.activeImages.set(product.id, list[nextIdx]);
+        }
+      }
+    }, 3800);
+  }
+
+  selectCategory(catId: string): void {
+    if (this.selectedCategory === catId) return;
+    this.selectedCategory = catId;
+    this.categoryChange.emit(catId);
     this.loadProducts();
   }
 

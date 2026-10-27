@@ -49,6 +49,7 @@ public record OfferDto(
     string? ImageUrl,
     List<string>? Images,
     string? ActionUrl,
+    bool IsLimitedTime,
     bool IsActive
 );
 
@@ -59,6 +60,7 @@ public record CreateOfferRequest(
     string? ImageUrl,
     List<string>? Images,
     string? ActionUrl,
+    bool? IsLimitedTime,
     bool IsActive
 );
 
@@ -69,5 +71,6 @@ public record UpdateOfferRequest(
     string? ImageUrl,
     List<string>? Images,
     string? ActionUrl,
+    bool? IsLimitedTime,
     bool IsActive
 );

@@ -1,8 +1,14 @@
 <section id="offers" class="offers-section">
   <div class="container-custom">
-    <!-- Header: Only "العروض" as requested -->
+    <!-- Header: "عروض التمساح" in modern neon green as requested -->
     <div class="section-title-wrapper">
-      <h2 class="section-heading">العروض</h2>
+      <h2 class="section-heading neon-croc-title">
+        <span class="croc-glow-badge">
+          <img src="logo.png" alt="3mmar Store Croc" class="croc-title-icon" />
+        </span>
+        <span>عروض التمساح</span>
+      </h2>
+      <p class="section-subtitle">خصومات حصرية وباقات لا تقبل المنافسة لفترة محدودة</p>
     </div>
 
     <!-- Professional Empty State for Offers: ALWAYS displayed when there are no offers -->
@@ -17,21 +23,55 @@
         </div>
         <h3 class="empty-title">لا تتوفر عروض حالياً</h3>
         <p class="empty-text">
-          ترقبوا قريباً أقوى العروض والخصومات الحصرية على أحدث الهواتف والإكسسوارات الأصلية من 3mmar $tore.
+          ترقبوا قريباً أقوى عروض التمساح والخصومات الحصرية على أحدث الهواتف والإكسسوارات الأصلية من 3mmar $tore.
         </p>
       </div>
     }
 
-    <!-- Offers Grid: Scaled down, compact, perfectly proportioned -->
+    <!-- Offers Grid: Scaled down, compact, interactive slideshow cards -->
     @if (offers.length > 0) {
       <div class="offers-grid">
         @for (offer of offers; track offer.id) {
-          <div class="offer-card glass-panel">
+          <div class="offer-card glass-panel" (click)="openOfferDetails(offer)">
             <div class="offer-image-box">
               <img [src]="getActiveImage(offer)" [alt]="offer.title" class="offer-img" />
+              
+              <!-- Floating Slider Arrows if more than 1 image exists -->
+              @if (getImagesList(offer).length > 1) {
+                <button type="button" class="btn-img-nav btn-img-prev" (click)="prevImage(offer, $event)" title="الصورة السابقة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <button type="button" class="btn-img-nav btn-img-next" (click)="nextImage(offer, $event)" title="الصورة التالية">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+
+                <!-- Mini Counter Pill -->
+                <div class="card-img-counter">
+                  <span>{{ getCurrentImageIndex(offer) + 1 }} / {{ getImagesList(offer).length }}</span>
+                </div>
+              }
+
               <div class="card-brand-watermark">
                 <img src="logo.png" alt="3mmar Store" class="watermark-logo" />
                 <span class="watermark-text">3mmar $tore</span>
+              </div>
+
+              <!-- Top badges: category tag & limited-time badge -->
+              <div class="offer-top-badges">
+                <span class="offer-tag">{{ offer.badgeText }}</span>
+                @if (offer.isLimitedTime) {
+                  <span class="badge-limited-time">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>لفترة محدودة</span>
+                  </span>
+                }
               </div>
             </div>
 
@@ -43,7 +83,7 @@
                     [src]="img"
                     class="card-strip-thumb"
                     [class.active]="getActiveImage(offer) === img"
-                    (click)="selectImage(offer, img); $event.stopPropagation()"
+                    (click)="selectImage(offer, img, $event)"
                     alt="Offer thumbnail"
                   />
                 }
@@ -51,13 +91,12 @@
             }
 
             <div class="offer-content">
-              <span class="offer-tag">{{ offer.badgeText }}</span>
               <h3 class="offer-title">{{ offer.title }}</h3>
               <p class="offer-desc">{{ offer.description }}</p>
               
               <div class="offer-footer">
-                <button class="btn-primary offer-btn" (click)="scrollToProducts()">
-                  <span>تصفح العرض</span>
+                <button class="btn-primary offer-btn" (click)="openOfferDetails(offer); $event.stopPropagation()">
+                  <span>عرض التفاصيل والطلب</span>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -70,4 +109,111 @@
       </div>
     }
   </div>
+
+  <!-- Interactive Quick View Modal for Offer Details -->
+  @if (selectedOffer) {
+    <div class="offer-modal-backdrop animate-fade-in" (click)="closeOfferDetails()">
+      <div class="offer-modal-card glass-panel" (click)="$event.stopPropagation()">
+        <!-- Close Button -->
+        <button class="modal-close-btn" (click)="closeOfferDetails()" title="إغلاق">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <div class="offer-modal-grid">
+          <!-- Gallery View -->
+          <div class="offer-modal-gallery">
+            <div class="modal-main-image-wrap">
+              <img [src]="modalActiveImage" [alt]="selectedOffer.title" class="modal-main-img" />
+
+              @if (getImagesList(selectedOffer).length > 1) {
+                <button type="button" class="modal-nav-arrow btn-prev" (click)="prevModalImage()" title="السابق">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <button type="button" class="modal-nav-arrow btn-next" (click)="nextModalImage()" title="التالي">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              }
+
+              <div class="card-brand-watermark">
+                <img src="logo.png" alt="3mmar Store" class="watermark-logo" />
+                <span class="watermark-text">3mmar $tore</span>
+              </div>
+            </div>
+
+            <!-- Thumbnails strip -->
+            @if (getImagesList(selectedOffer).length > 1) {
+              <div class="modal-thumbs-row">
+                @for (img of getImagesList(selectedOffer); track $index) {
+                  <img
+                    [src]="img"
+                    class="modal-thumb"
+                    [class.active]="modalActiveImage === img"
+                    (click)="selectModalImage(img)"
+                    alt="Thumbnail"
+                  />
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Offer Details & Ordering Actions -->
+          <div class="offer-modal-info">
+            <div class="modal-badges-group">
+              <span class="offer-tag">{{ selectedOffer.badgeText }}</span>
+              @if (selectedOffer.isLimitedTime) {
+                <span class="badge-limited-time pulse-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>عرض لفترة محدودة</span>
+                </span>
+              }
+            </div>
+
+            <h2 class="modal-offer-title">{{ selectedOffer.title }}</h2>
+            <p class="modal-offer-desc">{{ selectedOffer.description }}</p>
+
+            <div class="modal-offer-meta-box">
+              <div class="meta-row">
+                <span class="meta-label">الضمان:</span>
+                <span class="meta-val">ضمان معتمد من 3mmar $tore</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">حالة العرض:</span>
+                <span class="meta-val text-neon-green">ساري ومتاح للحجز المباشر</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">الموقع:</span>
+                <span class="meta-val">{{ settings.settings().address }}</span>
+              </div>
+            </div>
+
+            <div class="modal-offer-actions">
+              <button class="btn-claim-whatsapp" (click)="claimOffer(selectedOffer, 'WhatsApp')">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                </svg>
+                <span>حجز العرض عبر واتساب</span>
+              </button>
+
+              <button class="btn-claim-phone" (click)="claimOffer(selectedOffer, 'Phone')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>اتصال هاتفي</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </section>

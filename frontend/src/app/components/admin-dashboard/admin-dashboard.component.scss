@@ -1079,3 +1079,133 @@
     padding: 20px;
   }
 }
+
+/* Limited Time Checkbox Highlight */
+.limited-checkbox {
+  .limited-text {
+    color: #f59e0b;
+    font-weight: 700;
+  }
+}
+
+/* Floating Professional Toast Notification Banner */
+.admin-toast-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(10, 16, 24, 0.96);
+  border: 1px solid rgba(0, 230, 118, 0.4);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 230, 118, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 99999;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .toast-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: #00E676;
+    border-radius: 0 14px 14px 0;
+  }
+
+  .toast-icon-wrap {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(0, 230, 118, 0.15);
+    border: 1px solid rgba(0, 230, 118, 0.35);
+    color: #00E676;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .toast-content-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+
+    .toast-status-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #00E676;
+    }
+
+    .toast-detail-msg {
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+  }
+
+  .toast-dismiss-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #f1f5f9;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &.toast-error {
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(239, 68, 68, 0.2);
+
+    .toast-indicator {
+      background: #ef4444;
+    }
+
+    .toast-icon-wrap {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+    }
+
+    .toast-status-title {
+      color: #ef4444;
+    }
+  }
+}
+
+@keyframes slideUpToast {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

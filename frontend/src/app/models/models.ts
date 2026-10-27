@@ -40,6 +40,7 @@ export interface Offer {
   imageUrl?: string;
   images?: string[];
   actionUrl?: string;
+  isLimitedTime?: boolean;
   isActive: boolean;
 }
 

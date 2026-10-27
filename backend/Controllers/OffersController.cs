@@ -35,6 +35,7 @@ public class OffersController : ControllerBase
             o.ImageUrl,
             ParseImages(o.ImageUrl, o.ImagesJson),
             o.ActionUrl,
+            o.IsLimitedTime,
             o.IsActive)).ToList();
 
         return Ok(offers);
@@ -57,6 +58,7 @@ public class OffersController : ControllerBase
             o.ImageUrl,
             ParseImages(o.ImageUrl, o.ImagesJson),
             o.ActionUrl,
+            o.IsLimitedTime,
             o.IsActive)).ToList();
 
         return Ok(offers);
@@ -87,6 +89,7 @@ public class OffersController : ControllerBase
             ImageUrl = primaryImg,
             ImagesJson = System.Text.Json.JsonSerializer.Serialize(imagesList),
             ActionUrl = req.ActionUrl ?? "#products",
+            IsLimitedTime = req.IsLimitedTime ?? false,
             IsActive = req.IsActive,
             CreatedAt = DateTime.UtcNow
         };
@@ -94,7 +97,7 @@ public class OffersController : ControllerBase
         _context.Offers.Add(offer);
         await _context.SaveChangesAsync();
 
-        return Ok(new OfferDto(offer.Id, offer.Title, offer.Description, offer.BadgeText, offer.ImageUrl, imagesList, offer.ActionUrl, offer.IsActive));
+        return Ok(new OfferDto(offer.Id, offer.Title, offer.Description, offer.BadgeText, offer.ImageUrl, imagesList, offer.ActionUrl, offer.IsLimitedTime, offer.IsActive));
     }
 
     [Authorize(Roles = "Admin")]
@@ -123,11 +126,15 @@ public class OffersController : ControllerBase
         offer.ImageUrl = primaryImg;
         offer.ImagesJson = System.Text.Json.JsonSerializer.Serialize(imagesList);
         offer.ActionUrl = req.ActionUrl;
+        if (req.IsLimitedTime.HasValue)
+        {
+            offer.IsLimitedTime = req.IsLimitedTime.Value;
+        }
         offer.IsActive = req.IsActive;
 
         await _context.SaveChangesAsync();
 
-        return Ok(new OfferDto(offer.Id, offer.Title, offer.Description, offer.BadgeText, offer.ImageUrl, imagesList, offer.ActionUrl, offer.IsActive));
+        return Ok(new OfferDto(offer.Id, offer.Title, offer.Description, offer.BadgeText, offer.ImageUrl, imagesList, offer.ActionUrl, offer.IsLimitedTime, offer.IsActive));
     }
 
     private static List<string> ParseImages(string? imageUrl, string? imagesJson)

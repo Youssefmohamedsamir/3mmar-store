@@ -6,6 +6,7 @@ import { CategoryBarComponent } from './components/category-bar/category-bar.com
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { OffersComponent } from './components/offers/offers.component';
 import { MediaComponent } from './components/media/media.component';
+import { FooterComponent } from './components/footer/footer.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { AnalyticsService } from './services/analytics.service';
@@ -25,6 +26,7 @@ import { PwaService } from './services/pwa.service';
     ProductListComponent,
     OffersComponent,
     MediaComponent,
+    FooterComponent,
     AuthModalComponent,
     AdminDashboardComponent
   ],
@@ -35,7 +37,7 @@ export class App implements OnInit {
   selectedCategory: string = 'IPhone';
   isAuthModalOpen = false;
   pendingOrderAction: { productId: number; type: 'WhatsApp' | 'Phone' } | null = null;
-  activeView: 'home' | 'category' | 'admin' = 'home';
+  activeView: 'home' | 'admin' = 'home';
 
   categoryTabs = [
     { id: 'IPhone', name: 'أجهزة iPhone', subtitle: 'Apple' },
@@ -58,15 +60,22 @@ export class App implements OnInit {
   }
 
   handleStart(): void {
-    this.selectedCategory = 'IPhone';
-    this.activeView = 'category';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.activeView = 'home';
+    const el = document.getElementById('offers');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+    }
   }
 
   handleCategoryChange(category: string): void {
     this.selectedCategory = category;
-    this.activeView = 'category';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.activeView = 'home';
+    const el = document.getElementById('products-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   switchCategory(category: string): void {
@@ -120,8 +129,14 @@ export class App implements OnInit {
     }
 
     if (sectionId === 'categories' || sectionId === 'products') {
-      this.activeView = 'category';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.activeView = 'home';
+      setTimeout(() => {
+        const targetId = sectionId === 'products' ? 'products-section' : 'categories';
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 50);
       return;
     }
 
