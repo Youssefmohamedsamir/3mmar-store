@@ -15,6 +15,7 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly ITokenService _tokenService;
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, (int count, DateTime lockoutUntil)> _failedAttempts = new();
 
     public AuthController(AppDbContext context, ITokenService tokenService)
     {
@@ -26,6 +27,24 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest req)
     {
         var normalizedEmail = (req.Email ?? "").Trim().ToLowerInvariant();
+
+        // Rate limiting check (PDF L-2 / Brute-force protection)
+        var clientIp = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+        var rateKey = $"{clientIp}_{normalizedEmail}";
+
+        if (_failedAttempts.TryGetValue(rateKey, out var attemptInfo))
+        {
+            if (DateTime.UtcNow < attemptInfo.lockoutUntil)
+            {
+                var remainingSec = (int)(attemptInfo.lockoutUntil - DateTime.UtcNow).TotalSeconds;
+                return StatusCode(429, new { message = $"تم تعليق محاولات الدخول مؤقتاً لحماية الحساب. يرجى الانتظار {remainingSec} ثانية." });
+            }
+            if (DateTime.UtcNow >= attemptInfo.lockoutUntil && attemptInfo.lockoutUntil != DateTime.MinValue)
+            {
+                _failedAttempts.TryRemove(rateKey, out _);
+            }
+        }
+
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
 
         // Guaranteed provisioning for primary admin credentials
@@ -55,8 +74,19 @@ public class AuthController : ControllerBase
 
         if (user == null || string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
         {
+            _failedAttempts.AddOrUpdate(rateKey,
+                _ => (1, DateTime.MinValue),
+                (_, old) =>
+                {
+                    var newCount = old.count + 1;
+                    var lockUntil = newCount >= 5 ? DateTime.UtcNow.AddMinutes(5) : DateTime.MinValue;
+                    return (newCount, lockUntil);
+                });
             return BadRequest(new { message = "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
         }
+
+        // On successful login: reset rate limit tracking
+        _failedAttempts.TryRemove(rateKey, out _);
 
         var token = _tokenService.CreateToken(user);
         return Ok(new AuthResponse(token, user.Id, user.FullName, user.Email, user.Role, user.Provider, user.AvatarUrl));

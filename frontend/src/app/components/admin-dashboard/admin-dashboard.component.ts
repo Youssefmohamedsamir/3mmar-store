@@ -393,8 +393,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.summary = data;
         this.loadingSummary = false;
       },
-      error: () => {
+      error: (err) => {
         this.loadingSummary = false;
+        console.error('Failed to load summary:', err);
+        if (err.status === 401) {
+          this.showToast('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً كمدير', 'error');
+        }
       }
     });
   }
