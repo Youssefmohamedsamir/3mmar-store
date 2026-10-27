@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "3mmarStore"
+rootProject.name = "3mmar $tore APK"
 include ':app'
