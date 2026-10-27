@@ -113,6 +113,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.activeTab = tab;
     this.showProductModal = false;
     this.showOfferModal = false;
+    if (tab === 'products') {
+      this.loadProducts();
+    } else if (tab === 'offers') {
+      this.loadOffers();
+    } else if (tab === 'analytics') {
+      this.loadSummary();
+    } else if (tab === 'settings') {
+      this.loadSettings();
+    }
   }
 
   closeProductModal(): void {
@@ -514,12 +523,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.savingProduct = false;
-        this.products = prevProducts;
         console.error('Error saving product:', err);
         const errorDetail = err.status === 401
           ? 'انتهت صلاحية تسجيل الدخول للأدمن'
           : (err.error?.message || err.message || 'خطأ في الاتصال');
         this.showToast('تعذر حفظ المنتج: ' + errorDetail, 'error');
+        this.loadProducts();
       }
     });
   }
@@ -625,12 +634,12 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.savingOffer = false;
-        this.offers = prevOffers;
         console.error('Error saving offer:', err);
         const errorDetail = err.status === 401
           ? 'انتهت صلاحية تسجيل الدخول للأدمن'
           : (err.error?.message || err.message || 'خطأ في الاتصال');
         this.showToast('تعذر حفظ العرض: ' + errorDetail, 'error');
+        this.loadOffers();
       }
     });
   }

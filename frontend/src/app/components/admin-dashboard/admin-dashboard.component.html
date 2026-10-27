@@ -246,14 +246,23 @@
     <!-- TAB 2: Products Management -->
     @if (activeTab === 'products') {
       <div class="tab-content animate-fade-in">
-        <!-- Simple, Clean Add Product Button -->
-        <div class="action-bar-simple">
+        <!-- Simple, Clean Add Product Button & Refresh -->
+        <div class="action-bar-simple" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <button class="btn-simple-action btn-prod" (click)="openCreateProduct()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             <span>إضافة منتج جديد</span>
+          </button>
+
+          <button class="btn-simple-action" (click)="loadProducts()" [disabled]="loadingProducts" title="تحديث قائمة المنتجات">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>{{ loadingProducts ? 'جارِ التحميل...' : 'تحديث المنتجات (' + products.length + ')' }}</span>
           </button>
         </div>
 
@@ -299,13 +308,22 @@
     <!-- TAB 3: Offers Management -->
     @if (activeTab === 'offers') {
       <div class="tab-content animate-fade-in">
-        <!-- Simple, Clean Add Offer Button -->
-        <div class="action-bar-simple">
+        <!-- Simple, Clean Add Offer Button & Refresh -->
+        <div class="action-bar-simple" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <button class="btn-simple-action btn-ofr" (click)="openCreateOffer()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
             </svg>
             <span>إضافة عرض جديد</span>
+          </button>
+
+          <button class="btn-simple-action" (click)="loadOffers()" [disabled]="loadingOffers" title="تحديث قائمة العروض">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>{{ loadingOffers ? 'جارِ التحميل...' : 'تحديث العروض (' + offers.length + ')' }}</span>
           </button>
         </div>
 
