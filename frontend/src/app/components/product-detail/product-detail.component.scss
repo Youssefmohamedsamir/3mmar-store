@@ -81,11 +81,11 @@
   }
 }
 
-/* Detail Main Grid */
+/* Detail Main Grid: Details on RIGHT, Images Gallery on LEFT */
 .detail-main-grid {
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 28px;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 32px;
   align-items: start;
 
   @media (max-width: 900px) {

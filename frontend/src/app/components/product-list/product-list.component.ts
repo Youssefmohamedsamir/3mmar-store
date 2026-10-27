@@ -79,8 +79,6 @@ export class ProductListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   openProductDetails(product: Product): void {
-    this.selectedProduct = product;
-    this.modalActiveImage = this.getActiveImage(product);
     this.viewProduct.emit(product);
   }
 

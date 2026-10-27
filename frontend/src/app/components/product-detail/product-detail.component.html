@@ -30,56 +30,9 @@
       </button>
     </div>
 
-    <!-- Main Detail Showcase Grid -->
+    <!-- Main Detail Showcase Grid: Details on RIGHT, Images Gallery on LEFT -->
     <div class="detail-main-grid">
-      <!-- Media Gallery Column -->
-      <div class="gallery-column">
-        <div class="main-display-box glass-panel">
-          <img [src]="activeImage" [alt]="product.name" class="main-display-img" />
-
-          <!-- Slider Arrows if multiple images -->
-          @if (getImagesList().length > 1) {
-            <button type="button" class="gallery-arrow btn-prev" (click)="prevImage()" title="الصورة السابقة">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-            <button type="button" class="gallery-arrow btn-next" (click)="nextImage()" title="الصورة التالية">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          }
-
-          <!-- Image counter -->
-          <div class="image-index-badge">
-            <span>{{ activeImageIndex + 1 }} / {{ getImagesList().length }}</span>
-          </div>
-
-          <!-- Official Crocodile Watermark Badge -->
-          <div class="brand-watermark-pill">
-            <img src="logo.png" alt="3mmar Store Croc" class="watermark-logo" />
-            <span class="watermark-label">3mmar $tore</span>
-          </div>
-        </div>
-
-        <!-- Horizontal Thumbnails Strip -->
-        @if (getImagesList().length > 1) {
-          <div class="thumbnails-horizontal-bar">
-            @for (img of getImagesList(); track $index) {
-              <div
-                class="thumb-tile"
-                [class.active]="activeImageIndex === $index"
-                (click)="setActiveImage(img, $index)"
-              >
-                <img [src]="img" alt="Thumbnail" class="thumb-img" />
-              </div>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Information & Specs Column -->
+      <!-- 1. Right Column (يمين): Information & Specs & Pricing & Actions -->
       <div class="info-column">
         <div class="info-card glass-panel">
           <!-- Top Badges -->
@@ -202,6 +155,53 @@
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- 2. Left Column (شمال): Media Gallery & Zoom Viewer -->
+      <div class="gallery-column">
+        <div class="main-display-box glass-panel">
+          <img [src]="activeImage" [alt]="product.name" class="main-display-img" />
+
+          <!-- Slider Arrows if multiple images -->
+          @if (getImagesList().length > 1) {
+            <button type="button" class="gallery-arrow btn-prev" (click)="prevImage()" title="الصورة السابقة">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button type="button" class="gallery-arrow btn-next" (click)="nextImage()" title="الصورة التالية">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          }
+
+          <!-- Image counter -->
+          <div class="image-index-badge">
+            <span>{{ activeImageIndex + 1 }} / {{ getImagesList().length }}</span>
+          </div>
+
+          <!-- Official Crocodile Watermark Badge -->
+          <div class="brand-watermark-pill">
+            <img src="logo.png" alt="3mmar Store Croc" class="watermark-logo" />
+            <span class="watermark-label">3mmar $tore</span>
+          </div>
+        </div>
+
+        <!-- Horizontal Thumbnails Strip -->
+        @if (getImagesList().length > 1) {
+          <div class="thumbnails-horizontal-bar">
+            @for (img of getImagesList(); track $index) {
+              <div
+                class="thumb-tile"
+                [class.active]="activeImageIndex === $index"
+                (click)="setActiveImage(img, $index)"
+              >
+                <img [src]="img" alt="Thumbnail" class="thumb-img" />
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 
