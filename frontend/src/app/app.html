@@ -1,0 +1,47 @@
+<div class="app-layout">
+  <!-- Top Navigation Bar -->
+  <app-navbar
+    (openAuthModal)="isAuthModalOpen = true"
+    (navigateSection)="handleNavigate($event)"
+  ></app-navbar>
+
+  <main class="main-content">
+    @if (activeView === 'admin' && auth.isAdmin()) {
+      <!-- Dedicated Admin Dashboard View -->
+      <app-admin-dashboard></app-admin-dashboard>
+    } @else {
+      <!-- Main Store Flow -->
+      <!-- 1. Hero Section with Animated Logo & "لنبدأ" Button -->
+      <app-hero (startClick)="handleStart()"></app-hero>
+
+      <!-- 2. The 4 Centered Categories: iPhone, Android, Accessories, Other -->
+      <app-category-bar
+        [selectedCategory]="selectedCategory"
+        (categoryChange)="handleCategoryChange($event)"
+      ></app-category-bar>
+
+      <!-- 3. Dynamic Products Showcase with WhatsApp & Call Order -->
+      <app-product-list
+        [selectedCategory]="selectedCategory"
+        (requireAuth)="handleRequireAuth($event)"
+      ></app-product-list>
+
+      <!-- 4. Special Offers Section -->
+      <app-offers></app-offers>
+
+      <!-- 5. Social Media Accounts Section (Facebook, Instagram, TikTok) -->
+      <app-media></app-media>
+    }
+  </main>
+
+  <!-- Global Footer -->
+  <app-footer></app-footer>
+
+  <!-- Login/Register & Social Auth Modal -->
+  <app-auth-modal
+    [isOpen]="isAuthModalOpen"
+    [pendingAction]="pendingOrderAction"
+    (close)="isAuthModalOpen = false; pendingOrderAction = null"
+    (loginSuccess)="handleLoginSuccess($event)"
+  ></app-auth-modal>
+</div>

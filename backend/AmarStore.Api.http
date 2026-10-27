@@ -1,0 +1,6 @@
+@AmarStore.Api_HostAddress = http://localhost:5027
+
+GET {{AmarStore.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

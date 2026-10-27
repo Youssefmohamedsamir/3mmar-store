@@ -1,0 +1,518 @@
+<section id="admin-panel" class="admin-section">
+  <div class="container-custom">
+    <!-- Admin Header -->
+    <div class="admin-header glass-panel">
+      <div class="admin-title-box">
+        <div class="shield-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="admin-title">لوحة تحكم وإدارة متجر عمار</h2>
+          <p class="admin-desc">تحكم كامل في المنتجات، أرقام الواتساب والاتصال، روابط السوشيال ميديا، وإحصائيات الزوار</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="admin-nav-tabs">
+        <button
+          class="admin-tab-btn"
+          [class.active]="activeTab === 'analytics'"
+          (click)="activeTab = 'analytics'"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>الإحصائيات والزوار</span>
+        </button>
+
+        <button
+          class="admin-tab-btn"
+          [class.active]="activeTab === 'products'"
+          (click)="activeTab = 'products'"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <span>إدارة المنتجات</span>
+        </button>
+
+        <button
+          class="admin-tab-btn"
+          [class.active]="activeTab === 'offers'"
+          (click)="activeTab = 'offers'"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+            <rect x="2" y="7" width="20" height="5"></rect>
+            <line x1="12" y1="22" x2="12" y2="7"></line>
+          </svg>
+          <span>إدارة العروض</span>
+        </button>
+
+        <button
+          class="admin-tab-btn"
+          [class.active]="activeTab === 'settings'"
+          (click)="activeTab = 'settings'"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>الأرقام والسوشيال</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB 1: Analytics & Metrics -->
+    @if (activeTab === 'analytics') {
+      <div class="tab-content animate-fade-in">
+        <!-- Metric Cards Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card glass-panel">
+            <div class="metric-icon-box visitor-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">إجمالي الزوار</span>
+              <span class="metric-value">{{ summary?.totalVisitors || 0 }}</span>
+              <span class="metric-sub">زيارة مسجلة للنظام</span>
+            </div>
+          </div>
+
+          <div class="metric-card glass-panel">
+            <div class="metric-icon-box user-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">المستخدمين المسجلين</span>
+              <span class="metric-value text-neon">{{ summary?.totalRegisteredUsers || 0 }}</span>
+              <span class="metric-sub">عبر Google و Facebook ومحلياً</span>
+            </div>
+          </div>
+
+          <div class="metric-card glass-panel">
+            <div class="metric-icon-box order-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">إجمالي نقرات الطلب</span>
+              <span class="metric-value">{{ summary?.totalOrderClicks || 0 }}</span>
+              <span class="metric-sub">{{ summary?.whatsAppClicks || 0 }} واتساب / {{ summary?.phoneCallClicks || 0 }} اتصال</span>
+            </div>
+          </div>
+
+          <div class="metric-card glass-panel">
+            <div class="metric-icon-box prod-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">المنتجات المعروضة</span>
+              <span class="metric-value">{{ summary?.totalProducts || 0 }}</span>
+              <span class="metric-sub">عبر الأقسام الأربعة</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Registered Users Table -->
+        <div class="data-table-container glass-panel mt-6">
+          <div class="table-header">
+            <h3>قائمة المستخدمين المسجلين بالموقع</h3>
+            <span class="badge-neon">تسجيل الدخول الذكي</span>
+          </div>
+          <div class="table-responsive">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>البريد الإلكتروني</th>
+                  <th>طريقة التسجيل</th>
+                  <th>الرتبة</th>
+                  <th>تاريخ التسجيل</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (u of summary?.recentUsers; track u.id) {
+                  <tr>
+                    <td class="font-bold">{{ u.fullName }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>
+                      <span class="provider-pill" [class.google]="u.provider === 'Google'" [class.facebook]="u.provider === 'Facebook'">
+                        {{ u.provider }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="role-pill" [class.admin]="u.role === 'Admin'">{{ u.role }}</span>
+                    </td>
+                    <td>{{ formatDate(u.createdAt) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Order Intents Table -->
+        <div class="data-table-container glass-panel mt-6">
+          <div class="table-header">
+            <h3>سجل نقرات طلبات الشراء الأخيرة</h3>
+            <span class="badge-neon">متابعة العملاء المحتملين</span>
+          </div>
+          <div class="table-responsive">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>القسم</th>
+                  <th>السعر</th>
+                  <th>نوع الطلب</th>
+                  <th>العميل</th>
+                  <th>التاريخ والوقت</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (intent of summary?.recentIntents; track intent.id) {
+                  <tr>
+                    <td class="font-bold">{{ intent.productName }}</td>
+                    <td><span class="badge-cat-sm">{{ intent.category }}</span></td>
+                    <td class="text-neon">{{ intent.price.toLocaleString() }} ج.م</td>
+                    <td>
+                      <span class="order-type-pill" [class.whatsapp]="intent.orderType === 'WhatsApp'" [class.phone]="intent.orderType === 'Phone'">
+                        {{ intent.orderType === 'WhatsApp' ? 'واتساب' : 'اتصال هاتفي' }}
+                      </span>
+                    </td>
+                    <td>{{ intent.customerName }} ({{ intent.customerEmail }})</td>
+                    <td>{{ formatDate(intent.createdAt) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- TAB 2: Products Management -->
+    @if (activeTab === 'products') {
+      <div class="tab-content animate-fade-in">
+        <div class="tab-actions-bar">
+          <button class="btn-primary" (click)="openCreateProduct()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>إضافة منتج جديد</span>
+          </button>
+        </div>
+
+        <div class="admin-products-grid">
+          @for (p of products; track p.id) {
+            <div class="admin-product-card glass-panel">
+              <img [src]="p.imageUrl" [alt]="p.name" class="admin-prod-thumb" />
+              <div class="admin-prod-details">
+                <div class="badge-cat-sm">{{ p.category }}</div>
+                <h4 class="admin-prod-name">{{ p.name }}</h4>
+                <div class="admin-prod-price">{{ p.price.toLocaleString() }} ج.م</div>
+              </div>
+              <div class="admin-card-actions">
+                <button class="btn-icon edit-btn" (click)="openEditProduct(p)" title="تعديل">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button class="btn-icon delete-btn" (click)="deleteProduct(p.id)" title="حذف">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- TAB 3: Offers Management -->
+    @if (activeTab === 'offers') {
+      <div class="tab-content animate-fade-in">
+        <div class="tab-actions-bar">
+          <button class="btn-primary" (click)="openCreateOffer()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>إضافة عرض جديد</span>
+          </button>
+        </div>
+
+        <div class="admin-offers-grid">
+          @for (o of offers; track o.id) {
+            <div class="admin-offer-item glass-panel">
+              <div class="offer-info">
+                <span class="badge-neon">{{ o.badgeText }}</span>
+                <h4 class="text-lg font-bold mt-2 text-white">{{ o.title }}</h4>
+                <p class="text-sm text-gray-400 mt-1">{{ o.description }}</p>
+              </div>
+              <div class="admin-card-actions">
+                <button class="btn-icon edit-btn" (click)="openEditOffer(o)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button class="btn-icon delete-btn" (click)="deleteOffer(o.id)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- TAB 4: Settings & Numbers & Social Media -->
+    @if (activeTab === 'settings') {
+      <div class="tab-content animate-fade-in">
+        <div class="settings-form-wrapper glass-panel">
+          <div class="form-section-title">
+            <h3>أرقام التواصل والطلبات (واتساب وهاتف)</h3>
+            <p>تحديد الأرقام التي يتصل بها العميل أو يرسل طلب الواتساب إليها</p>
+          </div>
+
+          <div class="grid-2-col">
+            <div class="form-group">
+              <label>رقم الواتساب (لإرسال الطلبات)</label>
+              <input
+                type="text"
+                placeholder="201000000000 (بدون مسافات أو إشارة +)"
+                [(ngModel)]="currentSettings.whatsApp"
+                class="cyber-input"
+              />
+              <span class="field-hint">مثال: 201012345678 - سيتم فتح شات الواتساب مع العميل مباشرة عليه</span>
+            </div>
+
+            <div class="form-group">
+              <label>رقم الهاتف المباشر (للاتصال)</label>
+              <input
+                type="text"
+                placeholder="+201000000000"
+                [(ngModel)]="currentSettings.phone"
+                class="cyber-input"
+              />
+              <span class="field-hint">الرقم الذي يتم الاتصال به هاتفياً عند ضغط زر "اطلب بالاتصال"</span>
+            </div>
+          </div>
+
+          <div class="form-section-title mt-6">
+            <h3>روابط صفحات السوشيال ميديا الخاصة بك</h3>
+            <p>تحكم كامل في روابط فيسبوك وإنستجرام وتيك توك المعروضة في تبويب الميديا</p>
+          </div>
+
+          <div class="grid-3-col">
+            <div class="form-group">
+              <label>رابط صفحة Facebook</label>
+              <input
+                type="text"
+                placeholder="https://facebook.com/your-page"
+                [(ngModel)]="currentSettings.facebookUrl"
+                class="cyber-input"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>رابط حساب Instagram</label>
+              <input
+                type="text"
+                placeholder="https://instagram.com/your-account"
+                [(ngModel)]="currentSettings.instagramUrl"
+                class="cyber-input"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>رابط قناة TikTok</label>
+              <input
+                type="text"
+                placeholder="https://tiktok.com/@your-account"
+                [(ngModel)]="currentSettings.tiktokUrl"
+                class="cyber-input"
+              />
+            </div>
+          </div>
+
+          <div class="form-section-title mt-6">
+            <h3>بيانات المتجر والرسالة الترحيبية</h3>
+          </div>
+
+          <div class="form-group">
+            <label>اسم المتجر الرسمي</label>
+            <input
+              type="text"
+              [(ngModel)]="currentSettings.storeName"
+              class="cyber-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>الرسالة الترحيبية في الواجهة</label>
+            <textarea
+              rows="3"
+              [(ngModel)]="currentSettings.welcomeMessage"
+              class="cyber-input"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>عنوان ومقر المتجر</label>
+            <input
+              type="text"
+              [(ngModel)]="currentSettings.address"
+              class="cyber-input"
+            />
+          </div>
+
+          <div class="settings-actions">
+            <button class="btn-primary" (click)="saveSettings()" [disabled]="savingSettings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>{{ savingSettings ? 'جاري الحفظ...' : 'حفظ التعديلات الآن' }}</span>
+            </button>
+
+            @if (saveSettingsSuccess) {
+              <div class="save-badge-success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>تم تحديث الإعدادات والأرقام والروابط بنجاح!</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Create/Edit Product Modal -->
+  @if (showProductModal) {
+    <div class="modal-backdrop animate-fade-in" (click)="showProductModal = false">
+      <div class="modal-box glass-panel" (click)="$event.stopPropagation()">
+        <h3 class="modal-header-title">{{ editingProduct.id ? 'تعديل بيانات المنتج' : 'إضافة منتج جديد' }}</h3>
+        
+        <div class="modal-form-grid">
+          <div class="form-group">
+            <label>اسم المنتج</label>
+            <input type="text" [(ngModel)]="editingProduct.name" class="cyber-input" />
+          </div>
+
+          <div class="form-group">
+            <label>القسم (الخانة)</label>
+            <select [(ngModel)]="editingProduct.category" class="cyber-input">
+              <option value="IPhone">IPhone (أجهزة آبل)</option>
+              <option value="Android">Android (أجهزة أندرويد)</option>
+              <option value="Accessories">Accessories (إكسسوارات)</option>
+              <option value="Other">Other (أجهزة أخرى)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>السعر (ج.م)</label>
+            <input type="number" [(ngModel)]="editingProduct.price" class="cyber-input" />
+          </div>
+
+          <div class="form-group">
+            <label>السعر قبل الخصم (اختياري)</label>
+            <input type="number" [(ngModel)]="editingProduct.oldPrice" class="cyber-input" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>رابط الصورة</label>
+            <input type="text" [(ngModel)]="editingProduct.imageUrl" class="cyber-input" placeholder="https://..." />
+          </div>
+
+          <div class="form-group full-width">
+            <label>وصف ومواصفات المنتج</label>
+            <textarea rows="3" [(ngModel)]="editingProduct.description" class="cyber-input"></textarea>
+          </div>
+
+          <div class="form-group full-width checkbox-row">
+            <label class="custom-checkbox">
+              <input type="checkbox" [(ngModel)]="editingProduct.isAvailable" />
+              <span>متوفر للطلب حالياً</span>
+            </label>
+
+            <label class="custom-checkbox">
+              <input type="checkbox" [(ngModel)]="editingProduct.isFeatured" />
+              <span>تمييز المنتج في الواجهة</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-actions-footer">
+          <button class="btn-primary" (click)="saveProduct()">حفظ المنتج</button>
+          <button class="btn-outline" (click)="showProductModal = false">إلغاء</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Create/Edit Offer Modal -->
+  @if (showOfferModal) {
+    <div class="modal-backdrop animate-fade-in" (click)="showOfferModal = false">
+      <div class="modal-box glass-panel" (click)="$event.stopPropagation()">
+        <h3 class="modal-header-title">{{ editingOffer.id ? 'تعديل العرض' : 'إضافة عرض جديد' }}</h3>
+        
+        <div class="modal-form-grid">
+          <div class="form-group full-width">
+            <label>عنوان العرض</label>
+            <input type="text" [(ngModel)]="editingOffer.title" class="cyber-input" />
+          </div>
+
+          <div class="form-group">
+            <label>شارة العرض (Badge)</label>
+            <input type="text" [(ngModel)]="editingOffer.badgeText" class="cyber-input" placeholder="مثال: خصم 20%" />
+          </div>
+
+          <div class="form-group">
+            <label>رابط الصورة</label>
+            <input type="text" [(ngModel)]="editingOffer.imageUrl" class="cyber-input" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>تفاصيل العرض</label>
+            <textarea rows="3" [(ngModel)]="editingOffer.description" class="cyber-input"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-actions-footer">
+          <button class="btn-primary" (click)="saveOffer()">حفظ العرض</button>
+          <button class="btn-outline" (click)="showOfferModal = false">إلغاء</button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

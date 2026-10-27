@@ -1,0 +1,147 @@
+@if (isOpen) {
+  <div class="modal-backdrop animate-fade-in" (click)="onClose()">
+    <div class="modal-container glass-panel" (click)="$event.stopPropagation()">
+      <!-- Close Button -->
+      <button class="modal-close-btn" (click)="onClose()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-logo-box">
+          <img src="logo.png" alt="3mmar Store" class="modal-logo" />
+        </div>
+        <h3 class="modal-title">
+          {{ pendingAction ? 'سجل للمتابعة وإتمام طلبك فوراً' : 'تسجيل الدخول إلى متجر عمار' }}
+        </h3>
+        <p class="modal-subtitle">
+          {{ pendingAction ? 'يرجى تسجيل الدخول بحساب Google أو Facebook لتوثيق وتتبع طلبك' : 'اختر وسيلتك المفضلة للدخول والمتابعة' }}
+        </p>
+      </div>
+
+      <!-- Social Logins (Google & Facebook as explicitly requested) -->
+      <div class="social-buttons-stack">
+        <button class="btn-social btn-google" (click)="handleSocialLogin('Google')" [disabled]="loading">
+          <svg class="social-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span>المتابعة باستخدام Google</span>
+        </button>
+
+        <button class="btn-social btn-facebook" (click)="handleSocialLogin('Facebook')" [disabled]="loading">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="#1877F2">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+          <span>المتابعة باستخدام Facebook</span>
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="auth-divider">
+        <span>أو عبر البريد الإلكتروني</span>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="tabs-switcher">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="mode === 'login'"
+          (click)="setMode('login')"
+        >
+          تسجيل الدخول
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="mode === 'register'"
+          (click)="setMode('register')"
+        >
+          إنشاء حساب جديد
+        </button>
+      </div>
+
+      <!-- Error Alert -->
+      @if (errorMessage) {
+        <div class="error-alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <!-- Form -->
+      <form (submit)="submitLocal(); $event.preventDefault()" class="auth-form">
+        @if (mode === 'register') {
+          <div class="form-group">
+            <label>الاسم بالكامل</label>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                placeholder="مثال: أحمد عمار"
+                [(ngModel)]="fullName"
+                name="fullName"
+                required
+              />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="field-icon">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+          </div>
+        }
+
+        <div class="form-group">
+          <label>البريد الإلكتروني</label>
+          <div class="input-wrapper">
+            <input
+              type="email"
+              placeholder="example@mail.com"
+              [(ngModel)]="email"
+              name="email"
+              required
+            />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="field-icon">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              placeholder="••••••••"
+              [(ngModel)]="password"
+              name="password"
+              required
+            />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="field-icon">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-full submit-btn" [disabled]="loading">
+          @if (loading) {
+            <span>جاري المعالجة...</span>
+          } @else {
+            <span>{{ mode === 'login' ? 'دخول الآن' : 'تسجيل حساب' }}</span>
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+}

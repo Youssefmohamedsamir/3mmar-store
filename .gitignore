@@ -1,0 +1,25 @@
+## .NET Core
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.db-shm
+*.db-wal
+
+## Node & Angular
+**/node_modules/
+**/dist/
+**/.angular/
+**/.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+## IDE
+.vs/
+.idea/
+*.swp
+*.DS_Store

@@ -1,0 +1,121 @@
+<header class="navbar-wrapper">
+  <div class="container-custom">
+    <div class="navbar-content">
+      <!-- Store Brand / Logo -->
+      <div class="brand-area" (click)="goTo('hero')">
+        <div class="logo-box">
+          <img src="logo.png" alt="3mmar Store Logo" class="brand-logo" />
+          <div class="logo-glow-ring"></div>
+        </div>
+        <div class="brand-text">
+          <span class="store-title">3mmar_Store</span>
+          <span class="store-subtitle">متجر عمار للهواتف</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-links desktop-only">
+        <button class="nav-link-btn" (click)="goTo('hero')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          الرئيسية
+        </button>
+
+        <button class="nav-link-btn" (click)="goTo('categories')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          المنتجات
+        </button>
+
+        <button class="nav-link-btn" (click)="goTo('offers')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+            <rect x="2" y="7" width="20" height="5"></rect>
+            <line x1="12" y1="22" x2="12" y2="7"></line>
+          </svg>
+          العروض
+        </button>
+
+        <button class="nav-link-btn" (click)="goTo('media')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+          </svg>
+          الميديا
+        </button>
+
+        @if (auth.isAdmin()) {
+          <button class="nav-link-btn admin-link" (click)="goTo('admin')">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            لوحة الإدارة
+          </button>
+        }
+      </nav>
+
+      <!-- Action Area: Animated Login Button & User State -->
+      <div class="actions-area">
+        @if (auth.isLoggedIn()) {
+          <div class="user-pill">
+            <div class="user-avatar-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div class="user-meta">
+              <span class="user-name">{{ auth.currentUser()?.fullName }}</span>
+              <span class="user-badge">{{ auth.currentUser()?.role === 'Admin' ? 'مدير' : 'عميل' }}</span>
+            </div>
+            <button class="btn-logout" (click)="auth.logout()" title="تسجيل الخروج">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+        } @else {
+          <button class="btn-login-animated" (click)="openAuthModal.emit()">
+            <span class="login-glow"></span>
+            <span class="login-inner">
+              <svg class="login-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10 17 15 12 10 7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+              </svg>
+              <span>تسجيل الدخول</span>
+            </span>
+          </button>
+        }
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-toggle mobile-only" (click)="toggleMobileMenu()" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    @if (mobileMenuOpen) {
+      <div class="mobile-drawer animate-fade-in">
+        <button class="mobile-link" (click)="goTo('hero')">الرئيسية</button>
+        <button class="mobile-link" (click)="goTo('categories')">المنتجات</button>
+        <button class="mobile-link" (click)="goTo('offers')">العروض</button>
+        <button class="mobile-link" (click)="goTo('media')">الميديا</button>
+        @if (auth.isAdmin()) {
+          <button class="mobile-link admin-highlight" (click)="goTo('admin')">لوحة الإدارة</button>
+        }
+      </div>
+    }
+  </div>
+</header>

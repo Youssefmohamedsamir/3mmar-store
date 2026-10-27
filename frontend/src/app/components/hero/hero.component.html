@@ -1,0 +1,95 @@
+<section id="hero" class="hero-section">
+  <!-- Cyber Background Grids & Light Orbs -->
+  <div class="cyber-grid"></div>
+  <div class="neon-orb orb-1"></div>
+  <div class="neon-orb orb-2"></div>
+
+  <div class="container-custom">
+    <div class="hero-inner">
+      <!-- High-Tech Animated Logo Presentation -->
+      <div class="hero-visual animate-fade-in">
+        <div class="cyber-circle-pulse"></div>
+        <div class="cyber-ring ring-outer"></div>
+        <div class="cyber-ring ring-middle"></div>
+        
+        <div class="logo-showcase animate-logo-float">
+          <div class="logo-laser-scan"></div>
+          <img src="logo.png" alt="3mmar Store - متجر عمار" class="hero-main-logo" />
+        </div>
+
+        <div class="circuit-nodes">
+          <span class="node node-1"></span>
+          <span class="node node-2"></span>
+          <span class="node node-3"></span>
+          <span class="node node-4"></span>
+        </div>
+      </div>
+
+      <!-- Hero Texts & Start Button -->
+      <div class="hero-typography animate-fade-in">
+        <div class="badge-neon mb-4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+          </svg>
+          <span>المتجر الرقمي الأحدث للهواتف الأصلية</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span>متجر عمار</span>
+          <span class="gradient-text">للأجهزة الذكية والإكسسوارات</span>
+        </h1>
+
+        <p class="hero-description">
+          {{ settings.settings().welcomeMessage }}
+        </p>
+
+        <!-- CTA "لنبدأ" Button with Next-Gen Animation -->
+        <div class="hero-cta-wrapper">
+          <button class="btn-start-hero" (click)="onStart()">
+            <span class="btn-glow-layer"></span>
+            <span class="btn-particles"></span>
+            <span class="btn-content">
+              <span class="start-text">لنبدأ</span>
+              <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+              </svg>
+            </span>
+          </button>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="trust-features">
+          <div class="feature-item">
+            <div class="feature-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </div>
+            <span>ضمان رسمي معتمد</span>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <span>توصيل سريع لكافة المحافظات</span>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </div>
+            <span>طلب فوري مباشر واتساب واتصال</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

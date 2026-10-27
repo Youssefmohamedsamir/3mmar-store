@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Backend (ASP.NET Core)",
+      "type": "shell",
+      "command": "dotnet run --project backend/AmarStore.Api.csproj --urls=http://localhost:5000",
+      "isBackground": true,
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Run Frontend (Angular)",
+      "type": "shell",
+      "command": "cd frontend && npx ng serve --port 4200 --open",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Building...",
+          "endsPattern": "Application bundle generation complete."
+        }
+      }
+    }
+  ]
+}
