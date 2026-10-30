@@ -34,6 +34,11 @@ export class OffersService {
       if (typeof window === 'undefined' || !window.localStorage) return;
       const data = localStorage.getItem('3mmar_offers_cache');
       if (data) {
+        if (data.includes('عروض التمساح الخاصة')) {
+          localStorage.removeItem('3mmar_offers_cache');
+          this.cachedOffers = null;
+          return;
+        }
         this.cachedOffers = JSON.parse(data);
       }
     } catch {}

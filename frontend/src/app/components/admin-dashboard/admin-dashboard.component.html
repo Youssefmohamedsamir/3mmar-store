@@ -679,18 +679,18 @@
             @if (productImages.length > 0) {
               <div class="multi-images-grid">
                 @for (img of productImages; track $index) {
-                  <div class="image-gallery-item" [class.is-primary]="img === editingProduct.imageUrl">
+                  <div class="image-gallery-item" [class.is-primary]="img === editingProduct.imageUrl" (click)="setPrimaryProductImage(img)">
                     <img [src]="img" alt="Product Image" class="gallery-thumb" />
                     
                     @if (img === editingProduct.imageUrl) {
-                      <span class="primary-badge">الرئيسية</span>
+                      <span class="primary-badge">الرئيسية ⭐</span>
                     } @else {
-                      <button type="button" class="btn-set-primary" (click)="setPrimaryProductImage(img)" title="تعيين كصورة رئيسية">
+                      <button type="button" class="btn-set-primary" (click)="setPrimaryProductImage(img); $event.stopPropagation()" title="تعيين كصورة رئيسية">
                         اجعلها رئيسية
                       </button>
                     }
 
-                    <button type="button" class="btn-delete-img" (click)="removeProductImageAt($index)" title="حذف الصورة">
+                    <button type="button" class="btn-delete-img" (click)="removeProductImageAt($index); $event.stopPropagation()" title="حذف الصورة">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -815,18 +815,18 @@
             @if (offerImages.length > 0) {
               <div class="multi-images-grid">
                 @for (img of offerImages; track $index) {
-                  <div class="image-gallery-item" [class.is-primary]="img === editingOffer.imageUrl">
+                  <div class="image-gallery-item" [class.is-primary]="img === editingOffer.imageUrl" (click)="setPrimaryOfferImage(img)">
                     <img [src]="img" alt="Offer Image" class="gallery-thumb" />
                     
                     @if (img === editingOffer.imageUrl) {
-                      <span class="primary-badge">الرئيسية</span>
+                      <span class="primary-badge">الرئيسية ⭐</span>
                     } @else {
-                      <button type="button" class="btn-set-primary" (click)="setPrimaryOfferImage(img)" title="تعيين كصورة رئيسية">
+                      <button type="button" class="btn-set-primary" (click)="setPrimaryOfferImage(img); $event.stopPropagation()" title="تعيين كصورة رئيسية">
                         اجعلها رئيسية
                       </button>
                     }
 
-                    <button type="button" class="btn-delete-img" (click)="removeOfferImageAt($index)" title="حذف الصورة">
+                    <button type="button" class="btn-delete-img" (click)="removeOfferImageAt($index); $event.stopPropagation()" title="حذف الصورة">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>

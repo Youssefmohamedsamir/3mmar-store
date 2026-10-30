@@ -106,43 +106,6 @@ public static class DbInitializer
             await context.SaveChangesAsync();
         }
 
-        // Seed Products
-        if (!await context.Products.AnyAsync())
-        {
-            var product = new Product
-            {
-                Name = "iphone 12pro max",
-                Category = "IPhone",
-                Description = "أيفون 12 برو ماكس أصلي بحالة ممتازة وبطارية أصلية مع الشاحن والملحقات الكاملة",
-                Price = 20000,
-                Quantity = 2,
-                ImageUrl = "logo.png",
-                ImagesJson = "[\"logo.png\"]",
-                IsAvailable = true,
-                IsFeatured = true,
-                CreatedAt = DateTime.UtcNow
-            };
-            await context.Products.AddAsync(product);
-            await context.SaveChangesAsync();
-        }
-
-        // Seed Offers
-        if (!await context.Offers.AnyAsync())
-        {
-            var offer = new Offer
-            {
-                Title = "عروض التمساح الخاصة",
-                Description = "خصم حصري على جميع أجهزة الآيفون والأندرويد مع باقة إكسسوارات مجانية",
-                BadgeText = "عرض محدود",
-                ImageUrl = "logo.png",
-                ImagesJson = "[\"logo.png\"]",
-                ActionUrl = "#products",
-                IsLimitedTime = true,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-            };
-            await context.Offers.AddAsync(offer);
-            await context.SaveChangesAsync();
-        }
+        // No dummy/mock products or offers seeded - only real products added by admin will exist
     }
 }

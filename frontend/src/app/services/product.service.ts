@@ -5,38 +5,6 @@ import { Product } from '../models/models';
 import { AuthService } from './auth.service';
 import { getApiBaseUrl } from './api-config';
 
-// Instant Offline/Initial Seed Data (Eliminates Initial Fetch Latency on Mobile)
-export const INITIAL_PRODUCTS_SEED: Product[] = [
-  {
-    id: 4,
-    name: "iPhone 16 Pro Max",
-    category: "IPhone",
-    description: "النسخة الأصلية بسعة 256 جيجابايت مع الضمان والملحقات الأصلية",
-    price: 55000,
-    oldPrice: undefined,
-    quantity: 3,
-    imageUrl: "logo.png",
-    images: ["logo.png"],
-    isAvailable: true,
-    isFeatured: true,
-    createdAt: "2026-10-30T09:31:04.4033333"
-  },
-  {
-    id: 5,
-    name: "Samsung Galaxy S24 Ultra",
-    category: "Android",
-    description: "أحدث أجهزة سامسونج الفلاج شيب مع قلم S-Pen وكاميرا 200 ميجابكسل",
-    price: 49000,
-    oldPrice: undefined,
-    quantity: 2,
-    imageUrl: "logo.png",
-    images: ["logo.png"],
-    isAvailable: true,
-    isFeatured: true,
-    createdAt: "2026-10-30T09:31:04.5"
-  }
-];
-
 @Injectable({
   providedIn: 'root'
 })
@@ -54,7 +22,8 @@ export class ProductService {
     private http: HttpClient,
     private auth: AuthService
   ) {
-    this.initializeCacheFromStorageOrSeed();
+    this.cleanLegacyDummyCache();
+    this.restoreRealCacheFromStorage();
   }
 
   private getAuthHeaders() {
@@ -63,21 +32,35 @@ export class ProductService {
     };
   }
 
-  private initializeCacheFromStorageOrSeed(): void {
-    // 1. Try restoring from localStorage
-    const storedAll = this.getLocalCache('All');
-    if (storedAll && storedAll.length > 0) {
-      this.allProductsCached = storedAll;
-      this.ramCache.set('All', storedAll);
-      this.populateCategoryCaches(storedAll);
-      return;
-    }
+  /**
+   * Automatically detect and purge any legacy mock/dummy data
+   * (e.g. iPhone 16 Pro Max, Samsung Galaxy S24 Ultra, or seed objects)
+   */
+  private cleanLegacyDummyCache(): void {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return;
+      const allCachedStr = localStorage.getItem('3mmar_cache_All');
+      if (allCachedStr && (allCachedStr.includes('iPhone 16 Pro Max') || allCachedStr.includes('Samsung Galaxy S24 Ultra') || allCachedStr.includes('55000'))) {
+        for (const cat of ['All', 'IPhone', 'Android', 'Accessories', 'Other']) {
+          localStorage.removeItem(`3mmar_cache_${cat}`);
+        }
+      }
+    } catch {}
+  }
 
-    // 2. Fallback to Initial Seed for true 0ms first paint
-    this.allProductsCached = INITIAL_PRODUCTS_SEED;
-    this.ramCache.set('All', INITIAL_PRODUCTS_SEED);
-    this.setLocalCache('All', INITIAL_PRODUCTS_SEED);
-    this.populateCategoryCaches(INITIAL_PRODUCTS_SEED);
+  private restoreRealCacheFromStorage(): void {
+    const storedAll = this.getLocalCache('All');
+    if (storedAll && Array.isArray(storedAll) && storedAll.length > 0) {
+      // Ensure no dummy products exist in cache
+      const isClean = !storedAll.some(p => p.name?.includes('iPhone 16 Pro Max') || p.name?.includes('Samsung Galaxy S24 Ultra'));
+      if (isClean) {
+        this.allProductsCached = storedAll;
+        this.ramCache.set('All', storedAll);
+        this.populateCategoryCaches(storedAll);
+      } else {
+        this.clearCache();
+      }
+    }
   }
 
   private populateCategoryCaches(all: Product[]): void {
@@ -102,9 +85,7 @@ export class ProductService {
     try {
       if (typeof window === 'undefined' || !window.localStorage) return;
       localStorage.setItem(`3mmar_cache_${key}`, JSON.stringify(data));
-    } catch {
-      // Safe fallback if quota exceeded
-    }
+    } catch {}
   }
 
   hasCached(category?: string): boolean {
@@ -142,8 +123,10 @@ export class ProductService {
     this.allProductsCached = null;
     this.inFlightRequest = null;
     try {
-      for (const cat of ['All', 'IPhone', 'Android', 'Accessories', 'Other']) {
-        localStorage.removeItem(`3mmar_cache_${cat}`);
+      if (typeof window !== 'undefined' && window.localStorage) {
+        for (const cat of ['All', 'IPhone', 'Android', 'Accessories', 'Other']) {
+          localStorage.removeItem(`3mmar_cache_${cat}`);
+        }
       }
     } catch {}
   }
@@ -170,16 +153,16 @@ export class ProductService {
 
     // Deduplicate in-flight requests for 'All' products
     if (!category || category === 'All') {
-      if (this.inFlightRequest) {
+      if (this.inFlightRequest && !forceRefresh) {
         return this.inFlightRequest;
       }
 
       this.inFlightRequest = this.http.get<Product[]>(this.apiUrl).pipe(
         tap((data) => {
-          this.allProductsCached = data;
-          this.ramCache.set('All', data);
-          this.setLocalCache('All', data);
-          this.populateCategoryCaches(data);
+          this.allProductsCached = data || [];
+          this.ramCache.set('All', this.allProductsCached);
+          this.setLocalCache('All', this.allProductsCached);
+          this.populateCategoryCaches(this.allProductsCached);
           this.inFlightRequest = null;
         }),
         shareReplay(1)
@@ -203,8 +186,9 @@ export class ProductService {
 
     return this.http.get<Product[]>(this.apiUrl, { params }).pipe(
       tap((data) => {
-        this.ramCache.set(cacheKey, data);
-        this.setLocalCache(cacheKey, data);
+        const list = data || [];
+        this.ramCache.set(cacheKey, list);
+        this.setLocalCache(cacheKey, list);
       })
     );
   }
