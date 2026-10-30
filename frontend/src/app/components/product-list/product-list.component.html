@@ -46,11 +46,16 @@
       </div>
     </div>
 
-    <!-- Loading State -->
+    <!-- Circular Dots Wave Loading State -->
     @if (loading) {
-      <div class="loading-state">
-        <div class="cyber-spinner"></div>
-        <p>جاري التحميل...</p>
+      <div class="circular-dots-loader" role="status" aria-label="جاري التحميل">
+        <div class="dots-pulse-track">
+          <span class="pulse-circle c1"></span>
+          <span class="pulse-circle c2"></span>
+          <span class="pulse-circle c3"></span>
+          <span class="pulse-circle c4"></span>
+        </div>
+        <p class="loader-label">جاري جلب معروضات المتجر...</p>
       </div>
     }
 

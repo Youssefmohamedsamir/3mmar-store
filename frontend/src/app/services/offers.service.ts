@@ -30,7 +30,10 @@ export class OffersService {
     this.cachedOffers = null;
   }
 
-  getOffers(): Observable<Offer[]> {
+  getOffers(forceRefresh: boolean = false): Observable<Offer[]> {
+    if (!forceRefresh && this.cachedOffers) {
+      return of(this.cachedOffers);
+    }
     return this.http.get<Offer[]>(this.apiUrl).pipe(
       tap(data => this.cachedOffers = data)
     );

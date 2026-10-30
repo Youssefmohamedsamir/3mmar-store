@@ -11,8 +11,21 @@
       <p class="section-subtitle">خصومات حصرية وباقات لا تقبل المنافسة لفترة محدودة</p>
     </div>
 
-    <!-- Professional Empty State for Offers: ALWAYS displayed when there are no offers -->
-    @if (offers.length === 0) {
+    <!-- Circular Dots Wave Loading State -->
+    @if (loading) {
+      <div class="circular-dots-loader" role="status" aria-label="جاري التحميل">
+        <div class="dots-pulse-track">
+          <span class="pulse-circle c1"></span>
+          <span class="pulse-circle c2"></span>
+          <span class="pulse-circle c3"></span>
+          <span class="pulse-circle c4"></span>
+        </div>
+        <p class="loader-label">جاري جلب عروض التمساح الحصرية...</p>
+      </div>
+    }
+
+    <!-- Professional Empty State for Offers: ALWAYS displayed when there are no offers and not loading -->
+    @if (!loading && offers.length === 0) {
       <div class="empty-offers-card glass-panel animate-fade-in">
         <div class="empty-icon-shield">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

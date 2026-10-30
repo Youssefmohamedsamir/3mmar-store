@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 import { AnalyticsSummary, SaleRecord } from '../models/models';
 import { AuthService } from './auth.service';
 import { getApiBaseUrl } from './api-config';
@@ -13,10 +13,16 @@ export class AnalyticsService {
     return `${getApiBaseUrl()}/analytics`;
   }
 
+  private cachedSummary: AnalyticsSummary | null = null;
+
   constructor(
     private http: HttpClient,
     private auth: AuthService
   ) {}
+
+  clearSummaryCache(): void {
+    this.cachedSummary = null;
+  }
 
   logVisit(path: string = '/'): Observable<any> {
     return this.http.post(`${this.apiUrl}/visit`, { path });
@@ -31,10 +37,15 @@ export class AnalyticsService {
     return this.http.post(`${this.apiUrl}/order-intent`, { productId, orderType, customerPhone }, { headers });
   }
 
-  getSummary(): Observable<AnalyticsSummary> {
+  getSummary(forceRefresh: boolean = false): Observable<AnalyticsSummary> {
+    if (!forceRefresh && this.cachedSummary) {
+      return of(this.cachedSummary);
+    }
     return this.http.get<AnalyticsSummary>(`${this.apiUrl}/summary`, {
       headers: { Authorization: `Bearer ${this.auth.getToken()}` }
-    });
+    }).pipe(
+      tap(data => this.cachedSummary = data)
+    );
   }
 
   recordSale(sale: any): Observable<SaleRecord> {

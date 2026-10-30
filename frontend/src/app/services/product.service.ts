@@ -12,7 +12,9 @@ export class ProductService {
   private get apiUrl(): string {
     return `${getApiBaseUrl()}/products`;
   }
-  private cache = new Map<string, Product[]>();
+  // In-Memory RAM Cache Map: key => Product[]
+  private ramCache = new Map<string, Product[]>();
+  private allProductsCached: Product[] | null = null;
 
   constructor(
     private http: HttpClient,
@@ -36,38 +38,45 @@ export class ProductService {
 
   private setLocalCache(key: string, data: Product[]): void {
     try {
-      // Keep only essential fields to prevent quota issues
-      const cleanData = data.slice(0, 50).map(p => ({
-        ...p,
-        // if base64 images are very huge, truncate non-primary images for localStorage
-        images: (p.images || [p.imageUrl]).slice(0, 3)
-      }));
-      localStorage.setItem(`3mmar_cache_${key}`, JSON.stringify(cleanData));
+      localStorage.setItem(`3mmar_cache_${key}`, JSON.stringify(data));
     } catch {
-      // Quota exceeded safe fallback
+      // Safe fallback if quota exceeded
     }
   }
 
   hasCached(category?: string): boolean {
     const key = category || 'All';
-    return this.cache.has(key) || !!this.getLocalCache(key);
+    if (this.ramCache.has(key)) return true;
+    if (this.allProductsCached !== null) return true;
+    return !!this.getLocalCache(key);
   }
 
   getCached(category?: string): Product[] | null {
     const key = category || 'All';
-    if (this.cache.has(key)) {
-      return this.cache.get(key)!;
+    if (this.ramCache.has(key)) {
+      return this.ramCache.get(key)!;
     }
+
+    if (this.allProductsCached !== null) {
+      if (!category || category === 'All') {
+        return this.allProductsCached;
+      }
+      const filtered = this.allProductsCached.filter(p => p.category?.toLowerCase() === category.toLowerCase());
+      this.ramCache.set(key, filtered);
+      return filtered;
+    }
+
     const local = this.getLocalCache(key);
     if (local) {
-      this.cache.set(key, local);
+      this.ramCache.set(key, local);
       return local;
     }
     return null;
   }
 
   clearCache(): void {
-    this.cache.clear();
+    this.ramCache.clear();
+    this.allProductsCached = null;
     try {
       for (const cat of ['All', 'IPhone', 'Android', 'Accessories', 'Other']) {
         localStorage.removeItem(`3mmar_cache_${cat}`);
@@ -77,19 +86,35 @@ export class ProductService {
 
   getProducts(category?: string, search?: string, forceRefresh: boolean = false): Observable<Product[]> {
     const cacheKey = category || 'All';
+
+    // If searching, always query fresh
+    if (search && search.trim()) {
+      let params = new HttpParams().set('search', search.trim());
+      if (category && category !== 'All') {
+        params = params.set('category', category);
+      }
+      return this.http.get<Product[]>(this.apiUrl, { params });
+    }
+
+    // Return instant RAM cache if available and not forcing refresh
+    if (!forceRefresh && this.hasCached(category)) {
+      const cached = this.getCached(category);
+      if (cached) {
+        return of(cached);
+      }
+    }
+
     let params = new HttpParams();
     if (category && category !== 'All') {
       params = params.set('category', category);
     }
-    if (search && search.trim()) {
-      params = params.set('search', search.trim());
-    }
 
     return this.http.get<Product[]>(this.apiUrl, { params }).pipe(
       tap((data) => {
-        if (!search) {
-          this.cache.set(cacheKey, data);
-          this.setLocalCache(cacheKey, data);
+        this.ramCache.set(cacheKey, data);
+        this.setLocalCache(cacheKey, data);
+        if (!category || category === 'All') {
+          this.allProductsCached = data;
         }
       })
     );

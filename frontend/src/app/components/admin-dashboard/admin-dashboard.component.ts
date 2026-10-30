@@ -403,9 +403,22 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadProducts(): void {
+  loadProducts(forceRefresh: boolean = false): void {
+    if (this.productService.hasCached() && !forceRefresh) {
+      const cached = this.productService.getCached();
+      if (cached) {
+        this.products = cached;
+        this.loadingProducts = false;
+        // Background refresh without blocking
+        this.productService.getProducts(undefined, undefined, true).subscribe({
+          next: (data) => this.products = data
+        });
+        return;
+      }
+    }
+
     this.loadingProducts = true;
-    this.productService.getProducts().subscribe({
+    this.productService.getProducts(undefined, undefined, forceRefresh).subscribe({
       next: (data) => {
         this.products = data;
         this.loadingProducts = false;
@@ -416,7 +429,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadOffers(): void {
+  loadOffers(forceRefresh: boolean = false): void {
     this.loadingOffers = true;
     this.offersService.getAllOffersAdmin().subscribe({
       next: (data) => {

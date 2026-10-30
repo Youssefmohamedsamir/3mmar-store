@@ -267,7 +267,17 @@
         </div>
 
         <!-- Products List or Clean Empty Notice -->
-        @if (products.length === 0 && !loadingProducts) {
+        @if (loadingProducts) {
+          <div class="admin-dots-loader">
+            <div class="dots-pulse-track">
+              <span class="pulse-circle c1"></span>
+              <span class="pulse-circle c2"></span>
+              <span class="pulse-circle c3"></span>
+              <span class="pulse-circle c4"></span>
+            </div>
+            <p class="loader-label">جاري جلب المنتجات من قاعدة البيانات والذاكرة...</p>
+          </div>
+        } @else if (products.length === 0) {
           <div class="empty-state-card glass-panel">
             <p>لا توجد منتجات مضافة حتى الآن. انقر على الزر أعلاه لإضافة أول منتج لمتجرك.</p>
           </div>
@@ -327,7 +337,17 @@
           </button>
         </div>
 
-        @if (offers.length === 0 && !loadingOffers) {
+        @if (loadingOffers) {
+          <div class="admin-dots-loader">
+            <div class="dots-pulse-track">
+              <span class="pulse-circle c1"></span>
+              <span class="pulse-circle c2"></span>
+              <span class="pulse-circle c3"></span>
+              <span class="pulse-circle c4"></span>
+            </div>
+            <p class="loader-label">جاري جلب العروض من قاعدة البيانات والذاكرة...</p>
+          </div>
+        } @else if (offers.length === 0) {
           <div class="empty-state-card glass-panel">
             <p>لا توجد عروض نشطة حالياً. انقر على الزر أعلاه لإضافة عرض ترويجي جديد.</p>
           </div>
