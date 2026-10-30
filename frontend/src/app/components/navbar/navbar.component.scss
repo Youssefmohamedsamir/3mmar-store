@@ -298,17 +298,25 @@
 
 /* Mobile drawer */
 .mobile-toggle {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 6px;
-  border-radius: 6px;
-  color: #e2e8f0;
+  background: rgba(0, 230, 118, 0.08);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  padding: 7px;
+  border-radius: 8px;
+  color: #00E676;
   cursor: pointer;
   display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: rgba(0, 230, 118, 0.2);
+    border-color: #00E676;
   }
 }
 
@@ -316,30 +324,88 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 12px 0 6px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 6px 8px 6px;
+  border-top: 1px solid rgba(0, 230, 118, 0.2);
   margin-top: 10px;
 
+  .drawer-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(0, 230, 118, 0.07);
+    border: 1px solid rgba(0, 230, 118, 0.25);
+    cursor: pointer;
+    margin-bottom: 4px;
+
+    .logo-box {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+
+      .store-title {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #ffffff;
+        font-family: 'Outfit', sans-serif;
+      }
+
+      .store-subtitle {
+        font-size: 0.68rem;
+        color: #00E676;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .drawer-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 4px 0 6px 0;
+  }
+
   .mobile-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     background: transparent;
     border: none;
     text-align: right;
     color: #e2e8f0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-radius: 8px;
     cursor: pointer;
     font-family: inherit;
+    transition: all 0.2s ease;
+
+    .drawer-icon {
+      width: 18px;
+      height: 18px;
+      color: #00E676;
+      flex-shrink: 0;
+    }
 
     &:hover {
-      background: rgba(0, 230, 118, 0.08);
+      background: rgba(0, 230, 118, 0.1);
       color: #00E676;
+      transform: translateX(-3px);
     }
 
     &.admin-highlight {
       color: #f59e0b;
       background: rgba(245, 158, 11, 0.08);
+
+      .drawer-icon {
+        color: #f59e0b;
+      }
     }
   }
 }

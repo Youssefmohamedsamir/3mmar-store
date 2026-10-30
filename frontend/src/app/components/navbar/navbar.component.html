@@ -1,8 +1,22 @@
 <header class="navbar-wrapper">
   <div class="container-custom">
     <div class="navbar-content">
-      <!-- Store Brand / Logo -->
-      <div class="brand-area" (click)="goTo('hero')">
+      <!-- Mobile Menu Toggle Button: Positioned on the RIGHT on mobile as requested -->
+      <button class="mobile-toggle mobile-only" (click)="toggleMobileMenu()" aria-label="القائمة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          @if (!mobileMenuOpen) {
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          } @else {
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          }
+        </svg>
+      </button>
+
+      <!-- Store Brand / Logo: Visible in navbar on Desktop -->
+      <div class="brand-area desktop-only" (click)="goTo('hero')">
         <div class="logo-box">
           <img src="logo.png" alt="3mmar Store Logo" class="brand-logo" />
           <div class="logo-glow-ring"></div>
@@ -12,7 +26,7 @@
         </div>
       </div>
 
-      <!-- Navigation Links -->
+      <!-- Navigation Links on Desktop -->
       <nav class="nav-links desktop-only">
         <button class="nav-link-btn" (click)="goTo('hero')">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -57,7 +71,7 @@
         }
       </nav>
 
-      <!-- Action Area: Animated Login Button & User State -->
+      <!-- Action Area: Animated Login Button & User State (Positioned on the LEFT) -->
       <div class="actions-area">
         @if (auth.isLoggedIn()) {
           <div class="user-pill" [class.clickable]="auth.isAdmin()" (click)="auth.isAdmin() && goTo('admin')" [title]="auth.isAdmin() ? 'الانتقال للوحة التحكم' : ''">
@@ -92,27 +106,66 @@
             </span>
           </button>
         }
-
-        <!-- Mobile Menu Toggle Button -->
-        <button class="mobile-toggle mobile-only" (click)="toggleMobileMenu()" aria-label="Menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
       </div>
     </div>
 
-    <!-- Mobile Drawer Menu -->
+    <!-- Mobile Drawer Menu (Contains Store Brand & Links as requested) -->
     @if (mobileMenuOpen) {
       <div class="mobile-drawer animate-fade-in">
-        <button class="mobile-link" (click)="goTo('hero')">الرئيسية</button>
-        <button class="mobile-link" (click)="goTo('categories')">المنتجات</button>
-        <button class="mobile-link" (click)="goTo('offers')">العروض</button>
-        <button class="mobile-link" (click)="goTo('media')">الميديا</button>
+        <!-- Store Brand inside the drawer as explicitly requested -->
+        <div class="drawer-brand" (click)="goTo('hero'); mobileMenuOpen = false">
+          <div class="logo-box">
+            <img src="logo.png" alt="3mmar Store Logo" class="brand-logo" />
+            <div class="logo-glow-ring"></div>
+          </div>
+          <div class="brand-text">
+            <span class="store-title">3mmar $tore</span>
+            <span class="store-subtitle">متجر الهواتف الذكية والإكسسوارات</span>
+          </div>
+        </div>
+
+        <div class="drawer-divider"></div>
+
+        <button class="mobile-link" (click)="goTo('hero')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="drawer-icon">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          الرئيسية
+        </button>
+
+        <button class="mobile-link" (click)="goTo('categories')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="drawer-icon">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          المنتجات
+        </button>
+
+        <button class="mobile-link" (click)="goTo('offers')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="drawer-icon">
+            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+            <rect x="2" y="7" width="20" height="5"></rect>
+            <line x1="12" y1="22" x2="12" y2="7"></line>
+          </svg>
+          العروض
+        </button>
+
+        <button class="mobile-link" (click)="goTo('media')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="drawer-icon">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+          </svg>
+          الميديا
+        </button>
+
         @if (auth.isAdmin()) {
-          <button class="mobile-link admin-highlight" (click)="goTo('admin')">لوحة الإدارة</button>
+          <button class="mobile-link admin-highlight" (click)="goTo('admin')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="drawer-icon">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            لوحة الإدارة
+          </button>
         }
       </div>
     }
