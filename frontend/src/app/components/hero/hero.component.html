@@ -1,30 +1,105 @@
 <section id="hero" class="hero-section">
   <div class="ambient-glow"></div>
 
-  <div class="container-custom">
+  <div class="container-custom hero-container">
     <div class="hero-inner">
-      <!-- Animated Logo (Natural, sleek) -->
-      <div class="logo-wrapper animate-fade-in">
-        <div class="logo-box animate-logo-float">
-          <div class="logo-laser"></div>
-          <img src="logo.png" alt="3mmar Store" class="hero-logo-img" />
+      <!-- High-End 3D Animated iPhone Showcase replacing static logo -->
+      <div class="iphone-showcase-wrapper animate-fade-in">
+        <div class="iphone-device-frame animate-phone-float">
+          <!-- Outer Phone Border with Titanium Sheen -->
+          <div class="phone-outer-chassis">
+            <!-- Dynamic Island -->
+            <div class="dynamic-island">
+              <span class="camera-lens"></span>
+              <span class="sensor-dot"></span>
+              <span class="island-glow-indicator"></span>
+            </div>
+
+            <!-- Phone Screen Content -->
+            <div class="phone-screen">
+              <!-- Animated Screen Wallpaper & Store Elements -->
+              <div class="screen-wallpaper">
+                <div class="screen-laser-sweep"></div>
+                <div class="screen-energy-glow"></div>
+                
+                <!-- Phone Screen Header Status Bar -->
+                <div class="screen-status-bar">
+                  <span class="status-time">9:41</span>
+                  <div class="status-icons">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="status-svg"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.25A10.938 10.938 0 0 1 1 12C1 5.92 5.92 1 12 1s11 4.92 11 11c0 2.45-.8 4.72-2.16 6.55l-.63-.63A9.957 9.957 0 0 0 21 12c0-4.97-4.03-9-9-9z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="status-svg"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                    <div class="battery-icon"><span class="battery-level"></span></div>
+                  </div>
+                </div>
+
+                <!-- Inside Phone: Futuristic 3mmar Store Mobile OS Showcase -->
+                <div class="screen-content">
+                  <div class="phone-store-badge">
+                    <span class="pulse-dot"></span>
+                    <span>3mmar Store OS</span>
+                  </div>
+
+                  <!-- Floating Phone Icons / Hologram Display -->
+                  <div class="phone-hologram-display">
+                    <div class="phone-model-preview">
+                      <svg class="preview-device-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3"></line>
+                      </svg>
+                      <div class="tech-rings">
+                        <span class="tech-ring ring-1"></span>
+                        <span class="tech-ring ring-2"></span>
+                      </div>
+                    </div>
+                    <div class="device-spec-tag">iPhone 16 Pro Max & Galaxy S24</div>
+                  </div>
+
+                  <!-- Mini Store Highlights ticker -->
+                  <div class="screen-tags-ticker">
+                    <span class="screen-chip">أجهزة أصلية 100%</span>
+                    <span class="screen-chip highlight">أفضل سعر</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Screen Reflection Highlights -->
+              <div class="screen-glass-glare"></div>
+            </div>
+
+            <!-- Phone Side Buttons -->
+            <div class="phone-btn phone-btn-action"></div>
+            <div class="phone-btn phone-btn-vol-up"></div>
+            <div class="phone-btn phone-btn-vol-down"></div>
+            <div class="phone-btn phone-btn-power"></div>
+          </div>
+
+          <!-- Ambient Glow around the Phone Frame -->
+          <div class="phone-aura-glow"></div>
         </div>
-        <div class="logo-halo"></div>
       </div>
 
       <!-- Hero Title & Circular Action -->
       <div class="hero-text-block animate-fade-in">
         <h1 class="hero-brand-name">3mmar $tore</h1>
+        <p class="hero-tagline">وجهتك الأولى لأحدث وأقوى الهواتف الذكية والإكسسوارات الأصلية</p>
 
-        <!-- Circular CTA Button: "دايرة في النصف" -->
+        <!-- Circular CTA Scroll Button: "دايرة في النصف" -->
         <div class="hero-actions-row">
-          <button class="btn-start-circle" (click)="onStart()" title="ابدأ التصفح" aria-label="ابدأ">
+          <button class="btn-start-circle" (click)="onStart()" title="ابدأ التصفح واستعرض العروض" aria-label="ابدأ">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <polyline points="19 12 12 19 5 12"></polyline>
             </svg>
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Scroll down indicator at bottom of full screen -->
+    <div class="hero-scroll-hint" (click)="onStart()">
+      <span class="hint-text">مرر للأسفل لاكتشاف المعروضات والعروض</span>
+      <div class="mouse-scroll-icon">
+        <span class="mouse-wheel"></span>
       </div>
     </div>
   </div>
