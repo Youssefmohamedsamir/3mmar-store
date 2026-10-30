@@ -1,32 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, shareReplay, tap } from 'rxjs';
+import { Observable, of, map, tap, catchError } from 'rxjs';
 import { Offer } from '../models/models';
 import { AuthService } from './auth.service';
-import { getApiBaseUrl } from './api-config';
+import { FirestoreService } from './firestore.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OffersService {
-  private get apiUrl(): string {
-    return `${getApiBaseUrl()}/offers`;
-  }
-
   private cachedOffers: Offer[] | null = null;
-  private inFlightRequest: Observable<Offer[]> | null = null;
 
   constructor(
-    private http: HttpClient,
+    private firestore: FirestoreService,
     private auth: AuthService
   ) {
     this.restoreFromLocalCache();
-  }
-
-  private getAuthHeaders() {
-    return {
-      Authorization: `Bearer ${this.auth.getToken()}`
-    };
   }
 
   private restoreFromLocalCache(): void {
@@ -61,7 +49,6 @@ export class OffersService {
 
   clearCache(): void {
     this.cachedOffers = null;
-    this.inFlightRequest = null;
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
         localStorage.removeItem('3mmar_offers_cache');
@@ -69,53 +56,86 @@ export class OffersService {
     } catch {}
   }
 
+  private sanitizeOffer(doc: any): Offer {
+    const idNum = typeof doc.id === 'number' ? doc.id : (parseInt(doc.id, 10) || Date.now());
+    const images: string[] = Array.isArray(doc.images) ? doc.images : [];
+    const primaryImg = doc.imageUrl || (images.length > 0 ? images[0] : 'logo.png');
+
+    return {
+      id: idNum,
+      title: doc.title || '',
+      description: doc.description || '',
+      badgeText: doc.badgeText || '',
+      imageUrl: primaryImg,
+      images: images.length ? images : (doc.imageUrl ? [doc.imageUrl] : []),
+      actionUrl: doc.actionUrl || '#products',
+      isLimitedTime: !!doc.isLimitedTime,
+      isActive: doc.isActive !== false
+    };
+  }
+
   getOffers(forceRefresh: boolean = false): Observable<Offer[]> {
-    if (!forceRefresh && this.cachedOffers !== null) {
-      return of(this.cachedOffers);
+    if (!forceRefresh && this.hasCached()) {
+      const cached = this.getCached();
+      if (cached) return of(cached);
     }
 
-    if (this.inFlightRequest) {
-      return this.inFlightRequest;
-    }
-
-    this.inFlightRequest = this.http.get<Offer[]>(this.apiUrl).pipe(
-      tap(data => {
-        this.cachedOffers = data;
-        this.setLocalCache(data);
-        this.inFlightRequest = null;
+    return this.firestore.getCollection<any>('offers').pipe(
+      map(rawDocs => {
+        const list = (rawDocs || []).map(d => this.sanitizeOffer(d));
+        return list;
       }),
-      shareReplay(1)
+      tap(offers => {
+        this.cachedOffers = offers;
+        this.setLocalCache(offers);
+      }),
+      catchError(err => {
+        console.error('Firestore getOffers error:', err);
+        return of(this.cachedOffers || []);
+      })
     );
-
-    return this.inFlightRequest;
   }
 
   getAllOffersAdmin(): Observable<Offer[]> {
-    return this.http.get<Offer[]>(`${this.apiUrl}/all`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.getOffers(true);
   }
 
   createOffer(offer: Partial<Offer>): Observable<Offer> {
-    return this.http.post<Offer>(this.apiUrl, offer, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    const id = Date.now();
+    const newOffer: Offer = {
+      id,
+      title: offer.title || '',
+      description: offer.description || '',
+      badgeText: offer.badgeText || 'عرض خاص',
+      imageUrl: offer.imageUrl || (offer.images && offer.images.length ? offer.images[0] : 'logo.png'),
+      images: offer.images || [],
+      actionUrl: offer.actionUrl || '#products',
+      isLimitedTime: offer.isLimitedTime ?? false,
+      isActive: offer.isActive ?? true
+    };
+
+    return this.firestore.setDocument('offers', String(id), newOffer).pipe(
+      map(() => newOffer),
       tap(() => this.clearCache())
     );
   }
 
   updateOffer(id: number, offer: Partial<Offer>): Observable<Offer> {
-    return this.http.put<Offer>(`${this.apiUrl}/${id}`, offer, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    const updated: Offer = {
+      ...offer,
+      id,
+      imageUrl: offer.imageUrl || (offer.images && offer.images.length ? offer.images[0] : 'logo.png'),
+      images: offer.images || []
+    } as Offer;
+
+    return this.firestore.setDocument('offers', String(id), updated).pipe(
+      map(() => updated),
       tap(() => this.clearCache())
     );
   }
 
   deleteOffer(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.firestore.deleteDocument('offers', String(id)).pipe(
       tap(() => this.clearCache())
     );
   }

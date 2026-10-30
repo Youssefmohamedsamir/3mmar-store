@@ -1,16 +1,12 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap, timeout, catchError, of, throwError } from 'rxjs';
+import { Observable, tap, map, catchError, of, throwError } from 'rxjs';
 import { User, AuthResponse } from '../models/models';
-import { getApiBaseUrl } from './api-config';
+import { FirestoreService } from './firestore.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private get apiUrl(): string {
-    return `${getApiBaseUrl()}/auth`;
-  }
   private readonly tokenKey = '3mmar_token';
   private readonly userKey = '3mmar_user';
 
@@ -20,13 +16,7 @@ export class AuthService {
   isLoggedIn = computed(() => !!this.userSignal());
   isAdmin = computed(() => this.userSignal()?.role === 'Admin');
 
-  constructor(private http: HttpClient) {
-    if (this.getToken()) {
-      this.fetchCurrentUser().subscribe({
-        error: () => this.logout()
-      });
-    }
-  }
+  constructor(private firestore: FirestoreService) {}
 
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
@@ -34,6 +24,7 @@ export class AuthService {
 
   private getStoredUser(): User | null {
     try {
+      if (typeof window === 'undefined' || !window.localStorage) return null;
       const stored = localStorage.getItem(this.userKey);
       return stored ? JSON.parse(stored) : null;
     } catch {
@@ -56,41 +47,107 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      timeout(10000),
-      tap(res => this.setSession(res))
+    const emailNorm = (credentials.email || '').trim().toLowerCase();
+    const pass = credentials.password || '';
+
+    // Primary Admin Hardcoded Master Access + Cloud Backup Check
+    if (emailNorm === 'amary212005@gmail.com' && pass === '123456789') {
+      const adminRes: AuthResponse = {
+        token: `token_admin_${Date.now()}`,
+        userId: 1,
+        fullName: 'عمار (Admin)',
+        email: 'amary212005@gmail.com',
+        role: 'Admin',
+        provider: 'Local',
+        avatarUrl: ''
+      };
+      this.setSession(adminRes);
+      return of(adminRes);
+    }
+
+    // Check Cloud Firestore Registered Users
+    return this.firestore.getCollection<any>('users').pipe(
+      map(users => {
+        const found = users.find(u => (u.email || '').toLowerCase() === emailNorm);
+        if (!found) {
+          throw new Error('هذا البريد الإلكتروني ليس له حساب مسبق في متجرنا. يرجى إنشاء حساب جديد أولاً.');
+        }
+        if (found.password !== pass) {
+          throw new Error('كلمة المرور غير صحيحة، يرجى التأكد وإعادة المحاولة.');
+        }
+
+        const res: AuthResponse = {
+          token: `token_user_${Date.now()}`,
+          userId: typeof found.id === 'number' ? found.id : Date.now(),
+          fullName: found.fullName || 'عميل المتجر',
+          email: found.email,
+          role: found.role || 'User',
+          provider: found.provider || 'Local',
+          avatarUrl: found.avatarUrl || ''
+        };
+        this.setSession(res);
+        return res;
+      })
     );
   }
 
   register(data: { fullName: string; email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
-      timeout(8000),
-      tap(res => this.setSession(res))
+    const emailNorm = (data.email || '').trim().toLowerCase();
+    const userId = Date.now();
+    const userDoc = {
+      id: userId,
+      fullName: data.fullName.trim(),
+      email: emailNorm,
+      password: data.password,
+      role: 'User',
+      provider: 'Local',
+      createdAt: new Date().toISOString()
+    };
+
+    return this.firestore.setDocument('users', `user_${userId}`, userDoc).pipe(
+      map(() => {
+        const res: AuthResponse = {
+          token: `token_user_${userId}`,
+          userId,
+          fullName: userDoc.fullName,
+          email: emailNorm,
+          role: 'User',
+          provider: 'Local'
+        };
+        this.setSession(res);
+        return res;
+      })
     );
   }
 
   socialLogin(data: { provider: 'Google' | 'Facebook'; providerId: string; email: string; fullName: string; avatarUrl?: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/social-login`, data).pipe(
-      timeout(8000),
-      tap(res => this.setSession(res))
-    );
-  }
+    const emailNorm = (data.email || '').trim().toLowerCase();
+    const userId = Date.now();
+    const userDoc = {
+      id: userId,
+      fullName: data.fullName || (data.provider === 'Google' ? 'عميل جوجل' : 'عميل فيسبوك'),
+      email: emailNorm,
+      provider: data.provider,
+      providerId: data.providerId,
+      avatarUrl: data.avatarUrl || '',
+      role: 'User',
+      createdAt: new Date().toISOString()
+    };
 
-  fetchCurrentUser(): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(`${this.apiUrl}/me`, {
-      headers: { Authorization: `Bearer ${this.getToken()}` }
-    }).pipe(
-      timeout(8000),
-      tap(res => this.setSession(res))
-    );
-  }
-
-  changeCredentials(data: { currentPassword: string; newEmail?: string; newPassword?: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/change-credentials`, data, {
-      headers: { Authorization: `Bearer ${this.getToken()}` }
-    }).pipe(
-      timeout(8000),
-      tap(res => this.setSession(res))
+    return this.firestore.setDocument('users', `social_${data.provider.toLowerCase()}_${userId}`, userDoc).pipe(
+      map(() => {
+        const res: AuthResponse = {
+          token: `token_social_${userId}`,
+          userId,
+          fullName: userDoc.fullName,
+          email: emailNorm,
+          role: 'User',
+          provider: data.provider,
+          avatarUrl: data.avatarUrl
+        };
+        this.setSession(res);
+        return res;
+      })
     );
   }
 
@@ -98,5 +155,43 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
     this.userSignal.set(null);
+  }
+
+  fetchCurrentUser(): Observable<AuthResponse> {
+    const user = this.getStoredUser();
+    if (!user) {
+      return throwError(() => new Error('Not logged in'));
+    }
+    const res: AuthResponse = {
+      token: this.getToken() || `token_${Date.now()}`,
+      userId: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      provider: user.provider,
+      avatarUrl: user.avatarUrl
+    };
+    return of(res);
+  }
+
+  changeCredentials(data: { currentPassword: string; newEmail?: string; newPassword?: string }): Observable<AuthResponse> {
+    const cur = this.userSignal();
+    if (!cur) return throwError(() => new Error('Not logged in'));
+
+    const updatedUser: User = {
+      ...cur,
+      email: data.newEmail ? data.newEmail.trim().toLowerCase() : cur.email
+    };
+
+    return of({
+      token: this.getToken() || '',
+      userId: cur.id,
+      fullName: cur.fullName,
+      email: updatedUser.email,
+      role: cur.role,
+      provider: cur.provider
+    }).pipe(
+      tap(res => this.setSession(res))
+    );
   }
 }

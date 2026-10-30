@@ -1,18 +1,12 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map, catchError, of } from 'rxjs';
 import { StoreSettings } from '../models/models';
-import { AuthService } from './auth.service';
-import { getApiBaseUrl } from './api-config';
+import { FirestoreService } from './firestore.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
-  private get apiUrl(): string {
-    return `${getApiBaseUrl()}/settings`;
-  }
-
   settings = signal<StoreSettings>({
     storeName: '3mmar Store',
     phone: '01044858440',
@@ -24,30 +18,31 @@ export class SettingsService {
     address: 'مدينة السادات'
   });
 
-  constructor(
-    private http: HttpClient,
-    private auth: AuthService
-  ) {
+  constructor(private firestore: FirestoreService) {
     this.loadSettings();
   }
 
   loadSettings(): void {
-    this.http.get<StoreSettings>(this.apiUrl).subscribe({
-      next: data => this.settings.set(data),
+    this.firestore.getDocument<StoreSettings>('settings', 'store').subscribe({
+      next: data => {
+        if (data) {
+          this.settings.set({ ...this.settings(), ...data });
+        }
+      },
       error: () => {}
     });
   }
 
   getSettings(): Observable<StoreSettings> {
-    return this.http.get<StoreSettings>(this.apiUrl).pipe(
+    return this.firestore.getDocument<StoreSettings>('settings', 'store').pipe(
+      map(data => data ? { ...this.settings(), ...data } : this.settings()),
       tap(data => this.settings.set(data))
     );
   }
 
   updateSettings(data: StoreSettings): Observable<StoreSettings> {
-    return this.http.put<StoreSettings>(this.apiUrl, data, {
-      headers: { Authorization: `Bearer ${this.auth.getToken()}` }
-    }).pipe(
+    return this.firestore.setDocument('settings', 'store', data).pipe(
+      map(() => data),
       tap(updated => this.settings.set(updated))
     );
   }

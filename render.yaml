@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: mmar-store-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        value: "Data Source=/app/data/amarstore.db"

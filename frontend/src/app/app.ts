@@ -143,6 +143,7 @@ export class App implements OnInit {
       // Execute pending order intent
       this.productService.getProductById(action.productId).subscribe({
         next: (product) => {
+          if (!product) return;
           this.analyticsService.recordOrderIntent(product.id, action.type).subscribe();
           const currentSettings = this.settingsService.settings();
 

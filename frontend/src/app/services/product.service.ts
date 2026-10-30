@@ -1,41 +1,26 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, shareReplay, tap } from 'rxjs';
+import { Observable, of, map, tap, catchError } from 'rxjs';
 import { Product } from '../models/models';
 import { AuthService } from './auth.service';
-import { getApiBaseUrl } from './api-config';
+import { FirestoreService } from './firestore.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private get apiUrl(): string {
-    return `${getApiBaseUrl()}/products`;
-  }
-
   // In-Memory RAM Cache Map: key => Product[]
   private ramCache = new Map<string, Product[]>();
   private allProductsCached: Product[] | null = null;
   private inFlightRequest: Observable<Product[]> | null = null;
 
   constructor(
-    private http: HttpClient,
+    private firestore: FirestoreService,
     private auth: AuthService
   ) {
     this.cleanLegacyDummyCache();
     this.restoreRealCacheFromStorage();
   }
 
-  private getAuthHeaders() {
-    return {
-      Authorization: `Bearer ${this.auth.getToken()}`
-    };
-  }
-
-  /**
-   * Automatically detect and purge any legacy mock/dummy data
-   * (e.g. iPhone 16 Pro Max, Samsung Galaxy S24 Ultra, or seed objects)
-   */
   private cleanLegacyDummyCache(): void {
     try {
       if (typeof window === 'undefined' || !window.localStorage) return;
@@ -51,7 +36,6 @@ export class ProductService {
   private restoreRealCacheFromStorage(): void {
     const storedAll = this.getLocalCache('All');
     if (storedAll && Array.isArray(storedAll) && storedAll.length > 0) {
-      // Ensure no dummy products exist in cache
       const isClean = !storedAll.some(p => p.name?.includes('iPhone 16 Pro Max') || p.name?.includes('Samsung Galaxy S24 Ultra'));
       if (isClean) {
         this.allProductsCached = storedAll;
@@ -131,96 +115,136 @@ export class ProductService {
     } catch {}
   }
 
+  private sanitizeProduct(doc: any): Product {
+    const idNum = typeof doc.id === 'number' ? doc.id : (parseInt(doc.id, 10) || Date.now());
+    const images: string[] = Array.isArray(doc.images) ? doc.images : [];
+    const primaryImg = doc.imageUrl || (images.length > 0 ? images[0] : 'logo.png');
+
+    return {
+      id: idNum,
+      name: doc.name || '',
+      category: doc.category || 'Other',
+      description: doc.description || '',
+      price: Number(doc.price) || 0,
+      oldPrice: doc.oldPrice !== undefined && doc.oldPrice !== null ? Number(doc.oldPrice) : undefined,
+      quantity: doc.quantity !== undefined ? Number(doc.quantity) : 1,
+      imageUrl: primaryImg,
+      images: images.length ? images : (doc.imageUrl ? [doc.imageUrl] : []),
+      isAvailable: doc.isAvailable !== false,
+      isFeatured: !!doc.isFeatured,
+      createdAt: doc.createdAt || new Date().toISOString()
+    };
+  }
+
   getProducts(category?: string, search?: string, forceRefresh: boolean = false): Observable<Product[]> {
     const cacheKey = category || 'All';
 
-    // If searching, always query fresh
-    if (search && search.trim()) {
-      let params = new HttpParams().set('search', search.trim());
-      if (category && category !== 'All') {
-        params = params.set('category', category);
-      }
-      return this.http.get<Product[]>(this.apiUrl, { params });
-    }
-
-    // Return instant RAM cache if available and not forcing refresh
-    if (!forceRefresh && this.hasCached(category)) {
+    // Instant RAM cache when available and not forcing refresh
+    if (!forceRefresh && !search && this.hasCached(category)) {
       const cached = this.getCached(category);
       if (cached) {
         return of(cached);
       }
     }
 
-    // Deduplicate in-flight requests for 'All' products
-    if (!category || category === 'All') {
-      if (this.inFlightRequest && !forceRefresh) {
-        return this.inFlightRequest;
-      }
+    return this.firestore.getCollection<any>('products').pipe(
+      map(rawDocs => {
+        let list: Product[] = (rawDocs || []).map(d => this.sanitizeProduct(d));
 
-      this.inFlightRequest = this.http.get<Product[]>(this.apiUrl).pipe(
-        tap((data) => {
-          this.allProductsCached = data || [];
-          this.ramCache.set('All', this.allProductsCached);
-          this.setLocalCache('All', this.allProductsCached);
-          this.populateCategoryCaches(this.allProductsCached);
-          this.inFlightRequest = null;
-        }),
-        shareReplay(1)
-      );
+        // Filter by category
+        if (category && category !== 'All') {
+          list = list.filter(p => p.category?.toLowerCase() === category.toLowerCase());
+        }
 
-      return this.inFlightRequest;
-    }
+        // Filter by search query
+        if (search && search.trim()) {
+          const q = search.trim().toLowerCase();
+          list = list.filter(p =>
+            p.name.toLowerCase().includes(q) ||
+            p.description.toLowerCase().includes(q)
+          );
+        }
 
-    // For specific category: check if we can resolve from allProductsCached in memory
-    if (this.allProductsCached !== null && !forceRefresh) {
-      const filtered = this.allProductsCached.filter(p => p.category?.toLowerCase() === category.toLowerCase());
-      this.ramCache.set(cacheKey, filtered);
-      this.setLocalCache(cacheKey, filtered);
-      return of(filtered);
-    }
+        // Sort: Featured first, then newest
+        list.sort((a, b) => {
+          if (b.isFeatured !== a.isFeatured) {
+            return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+          }
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
 
-    let params = new HttpParams();
-    if (category && category !== 'All') {
-      params = params.set('category', category);
-    }
-
-    return this.http.get<Product[]>(this.apiUrl, { params }).pipe(
-      tap((data) => {
-        const list = data || [];
-        this.ramCache.set(cacheKey, list);
-        this.setLocalCache(cacheKey, list);
+        return list;
+      }),
+      tap(products => {
+        if (!search || !search.trim()) {
+          if (!category || category === 'All') {
+            this.allProductsCached = products;
+            this.ramCache.set('All', products);
+            this.setLocalCache('All', products);
+            this.populateCategoryCaches(products);
+          } else {
+            this.ramCache.set(cacheKey, products);
+            this.setLocalCache(cacheKey, products);
+          }
+        }
+      }),
+      catchError(err => {
+        console.error('Firestore getProducts error:', err);
+        const cached = this.getCached(category);
+        return of(cached || []);
       })
     );
   }
 
-  getProductById(id: number): Observable<Product> {
+  getProductById(id: number): Observable<Product | null> {
     if (this.allProductsCached) {
       const p = this.allProductsCached.find(x => x.id === id);
       if (p) return of(p);
     }
-    return this.http.get<Product>(`${this.apiUrl}/${id}`);
+    return this.firestore.getDocument<any>('products', String(id)).pipe(
+      map(doc => doc ? this.sanitizeProduct(doc) : null)
+    );
   }
 
   createProduct(product: Partial<Product>): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    const id = Date.now();
+    const newProduct: Product = {
+      id,
+      name: product.name || '',
+      category: product.category || 'IPhone',
+      description: product.description || '',
+      price: product.price || 0,
+      oldPrice: product.oldPrice,
+      quantity: product.quantity !== undefined ? product.quantity : 1,
+      imageUrl: product.imageUrl || (product.images && product.images.length ? product.images[0] : 'logo.png'),
+      images: product.images || [],
+      isAvailable: product.isAvailable ?? true,
+      isFeatured: product.isFeatured ?? false,
+      createdAt: new Date().toISOString()
+    };
+
+    return this.firestore.setDocument('products', String(id), newProduct).pipe(
+      map(() => newProduct),
       tap(() => this.clearCache())
     );
   }
 
   updateProduct(id: number, product: Partial<Product>): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/${id}`, product, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    const updated: Product = {
+      ...product,
+      id,
+      imageUrl: product.imageUrl || (product.images && product.images.length ? product.images[0] : 'logo.png'),
+      images: product.images || []
+    } as Product;
+
+    return this.firestore.setDocument('products', String(id), updated).pipe(
+      map(() => updated),
       tap(() => this.clearCache())
     );
   }
 
   deleteProduct(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.firestore.deleteDocument('products', String(id)).pipe(
       tap(() => this.clearCache())
     );
   }
