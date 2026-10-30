@@ -13,6 +13,7 @@ import { AdminDashboardComponent } from './components/admin-dashboard/admin-dash
 import { AnalyticsService } from './services/analytics.service';
 import { SettingsService } from './services/settings.service';
 import { ProductService } from './services/product.service';
+import { OffersService } from './services/offers.service';
 import { AuthService } from './services/auth.service';
 import { PwaService } from './services/pwa.service';
 import { ToastService } from './services/toast.service';
@@ -56,22 +57,30 @@ export class App implements OnInit {
     private analyticsService: AnalyticsService,
     private settingsService: SettingsService,
     private productService: ProductService,
+    private offersService: OffersService,
     public auth: AuthService,
     public pwa: PwaService,
     public toast: ToastService
   ) {}
 
   ngOnInit(): void {
-    // Log site visitor in backend
-    this.analyticsService.logVisit(window.location.pathname).subscribe();
-    this.loadAllProducts();
+    // Log site visitor in backend asynchronously
+    this.analyticsService.logVisit(window.location.pathname).subscribe({ error: () => {} });
+    
+    // Warm up RAM Cache immediately on startup for all products and offers
+    this.preloadStoreData();
   }
 
-  loadAllProducts(): void {
+  preloadStoreData(): void {
     this.productService.getProducts().subscribe({
       next: (data) => {
         this.allProductsList = data;
-      }
+      },
+      error: () => {}
+    });
+
+    this.offersService.getOffers().subscribe({
+      error: () => {}
     });
   }
 

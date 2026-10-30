@@ -1,11 +1,14 @@
 .hero-section {
   position: relative;
-  min-height: calc(100vh - 72px);
+  min-height: calc(100vh - 64px);
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 30px 0 20px 0;
+  padding: 16px 0;
   box-sizing: border-box;
 }
 
@@ -13,9 +16,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex: 1;
   width: 100%;
+  max-width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 .ambient-glow {
@@ -23,11 +29,11 @@
   top: 25%;
   left: 50%;
   transform: translateX(-50%);
-  width: 450px;
-  height: 350px;
-  background: radial-gradient(ellipse, rgba(0, 230, 118, 0.16) 0%, transparent 70%);
+  width: min(90vw, 400px);
+  height: 280px;
+  background: radial-gradient(ellipse, rgba(0, 230, 118, 0.14) 0%, transparent 70%);
   pointer-events: none;
-  filter: blur(60px);
+  filter: blur(50px);
 }
 
 .hero-inner {
@@ -35,10 +41,12 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 24px;
+  gap: 16px;
   position: relative;
   z-index: 10;
   margin: auto 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* ========================================================
@@ -54,8 +62,9 @@
 
 .iphone-device-frame {
   position: relative;
-  width: 180px;
-  height: 330px;
+  width: min(48vw, 165px);
+  height: min(88vw, 290px);
+  max-height: 42vh;
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: transform;
 }
@@ -581,25 +590,54 @@
 
 @media (max-width: 600px) {
   .hero-section {
-    min-height: calc(100vh - 60px);
-    padding: 20px 0 16px 0;
+    min-height: calc(100vh - 64px);
+    padding: 12px 0 16px 0;
+  }
+
+  .hero-inner {
+    gap: 12px;
   }
 
   .iphone-device-frame {
-    width: 155px;
-    height: 285px;
+    width: 140px;
+    height: 250px;
+    max-height: 38vh;
   }
 
   .hero-brand-name {
-    font-size: 2.1rem;
+    font-size: 1.85rem;
   }
 
   .hero-tagline {
-    font-size: 0.84rem;
-    padding: 0 10px;
+    font-size: 0.8rem;
+    padding: 0 14px;
+    line-height: 1.4;
+  }
+
+  .btn-start-circle {
+    width: 48px;
+    height: 48px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 
   .hero-scroll-hint {
     display: none; /* Keep clean on small mobile devices */
+  }
+}
+
+@media (max-height: 700px) {
+  .iphone-device-frame {
+    width: 125px;
+    height: 220px;
+  }
+  .hero-inner {
+    gap: 8px;
+  }
+  .hero-brand-name {
+    font-size: 1.7rem;
   }
 }
