@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   z-index: 9999;
   background: rgba(7, 10, 14, 0.94);
   backdrop-filter: blur(20px);
@@ -13,6 +13,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 230, 118, 0.08);
   padding: 8px 0;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .navbar-content {
@@ -178,13 +179,14 @@
   border: none;
   cursor: pointer;
   overflow: hidden;
+  contain: paint;
   transition: all 0.25s ease;
   white-space: nowrap;
   flex-shrink: 0;
 
   .login-glow {
     position: absolute;
-    inset: -150%;
+    inset: -50%;
     background: conic-gradient(from 0deg, transparent 0deg 300deg, #00E676 340deg, #00f5a0 360deg);
     animation: rotateBorder 3s linear infinite;
   }
@@ -352,27 +354,50 @@
 }
 
 @media (max-width: 600px) {
+  .navbar-wrapper {
+    padding: 6px 0;
+  }
   .navbar-content {
-    gap: 8px;
+    gap: 6px;
   }
   .brand-area {
-    gap: 8px;
+    gap: 6px;
   }
   .logo-box {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
   .store-title {
-    font-size: 0.98rem;
+    font-size: 0.90rem;
+  }
+  .actions-area {
+    gap: 6px;
   }
   .btn-login-animated .login-inner {
-    padding: 5px 10px;
-    font-size: 0.74rem;
+    padding: 4px 8px;
+    font-size: 0.72rem;
     gap: 4px;
 
     .login-icon {
       width: 12px;
       height: 12px;
     }
+  }
+  .mobile-toggle {
+    padding: 5px;
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+@media (max-width: 370px) {
+  .store-title {
+    font-size: 0.82rem;
+  }
+  .btn-login-animated .login-inner {
+    padding: 3px 6px;
+    font-size: 0.68rem;
   }
 }

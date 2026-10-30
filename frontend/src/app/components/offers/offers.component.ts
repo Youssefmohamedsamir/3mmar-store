@@ -135,6 +135,21 @@ export class OffersComponent implements OnInit, OnDestroy {
   }
 
   loadOffers(): void {
+    if (this.offersService.hasCached()) {
+      const cached = this.offersService.getCached();
+      if (cached) {
+        this.offers = cached;
+        this.loading = false;
+        // Background revalidation
+        this.offersService.getOffers(true).subscribe({
+          next: (data) => {
+            this.offers = data;
+          }
+        });
+        return;
+      }
+    }
+
     this.loading = true;
     this.offersService.getOffers().subscribe({
       next: (data) => {

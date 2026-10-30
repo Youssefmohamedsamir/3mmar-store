@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, tap } from 'rxjs';
+import { Observable, of, shareReplay, tap } from 'rxjs';
 import { Offer } from '../models/models';
 import { AuthService } from './auth.service';
 import { getApiBaseUrl } from './api-config';
@@ -14,11 +14,14 @@ export class OffersService {
   }
 
   private cachedOffers: Offer[] | null = null;
+  private inFlightRequest: Observable<Offer[]> | null = null;
 
   constructor(
     private http: HttpClient,
     private auth: AuthService
-  ) {}
+  ) {
+    this.restoreFromLocalCache();
+  }
 
   private getAuthHeaders() {
     return {
@@ -26,17 +29,60 @@ export class OffersService {
     };
   }
 
+  private restoreFromLocalCache(): void {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return;
+      const data = localStorage.getItem('3mmar_offers_cache');
+      if (data) {
+        this.cachedOffers = JSON.parse(data);
+      }
+    } catch {}
+  }
+
+  private setLocalCache(data: Offer[]): void {
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return;
+      localStorage.setItem('3mmar_offers_cache', JSON.stringify(data));
+    } catch {}
+  }
+
+  hasCached(): boolean {
+    return this.cachedOffers !== null;
+  }
+
+  getCached(): Offer[] | null {
+    return this.cachedOffers;
+  }
+
   clearCache(): void {
     this.cachedOffers = null;
+    this.inFlightRequest = null;
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('3mmar_offers_cache');
+      }
+    } catch {}
   }
 
   getOffers(forceRefresh: boolean = false): Observable<Offer[]> {
-    if (!forceRefresh && this.cachedOffers) {
+    if (!forceRefresh && this.cachedOffers !== null) {
       return of(this.cachedOffers);
     }
-    return this.http.get<Offer[]>(this.apiUrl).pipe(
-      tap(data => this.cachedOffers = data)
+
+    if (this.inFlightRequest) {
+      return this.inFlightRequest;
+    }
+
+    this.inFlightRequest = this.http.get<Offer[]>(this.apiUrl).pipe(
+      tap(data => {
+        this.cachedOffers = data;
+        this.setLocalCache(data);
+        this.inFlightRequest = null;
+      }),
+      shareReplay(1)
     );
+
+    return this.inFlightRequest;
   }
 
   getAllOffersAdmin(): Observable<Offer[]> {

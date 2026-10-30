@@ -64,6 +64,9 @@ export class App implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Immediate synchronous access to cached / seed products
+    this.allProductsList = this.productService.getCached('All') || [];
+
     // Log site visitor in backend asynchronously
     this.analyticsService.logVisit(window.location.pathname).subscribe({ error: () => {} });
     
