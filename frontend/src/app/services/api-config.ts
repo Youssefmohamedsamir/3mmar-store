@@ -10,7 +10,7 @@
  */
 
 // Active High-Speed Cloudflare Global Edge Tunnel URL for Live Backend
-export const LIVE_BACKEND_TUNNEL_URL = 'https://win-improvement-chair-filling.trycloudflare.com';
+export const LIVE_BACKEND_TUNNEL_URL = 'https://civic-sri-great-alternatives.trycloudflare.com';
 
 export function getApiBaseUrl(): string {
   if (typeof window !== 'undefined') {
