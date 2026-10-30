@@ -6,27 +6,35 @@
 
 .toolbar-wrapper {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .category-header-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  width: 100%;
 }
 
-/* Category Quick Chips */
+/* Category Quick Chips - Horizontally scrollable smooth track for mobile */
 .category-quick-chips {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 4px 2px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .filter-chip {
+    flex-shrink: 0;
     padding: 6px 14px;
     border-radius: 20px;
     background: rgba(12, 18, 26, 0.7);
@@ -36,6 +44,7 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
 
     &:hover {
       color: #ffffff;
@@ -73,7 +82,7 @@
 .search-box {
   position: relative;
   width: 100%;
-  max-width: 300px;
+  max-width: 100%;
   display: flex;
   align-items: center;
 

@@ -1,21 +1,25 @@
 .categories-section {
-  padding: 30px 0 20px 0;
+  padding: 24px 0 16px 0;
   position: relative;
   z-index: 10;
+  width: 100%;
+  overflow: hidden;
 }
 
 .categories-center-container {
   display: flex;
   justify-content: center;
   width: 100%;
+  min-width: 0;
 }
 
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 14px;
   width: 100%;
-  max-width: 900px; /* Reduced from 1050px */
+  max-width: 900px;
+  min-width: 0;
 }
 
 .category-card {
@@ -23,7 +27,7 @@
   background: rgba(12, 19, 28, 0.85);
   border: 1px solid rgba(0, 230, 118, 0.18);
   border-radius: 14px;
-  padding: 16px 14px; /* Reduced from 24px 20px */
+  padding: 16px 14px;
   cursor: pointer;
   transition: all 0.25s ease;
   user-select: none;
@@ -31,9 +35,11 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  min-width: 0;
+  box-sizing: border-box;
 
   .card-icon-box {
-    width: 44px; /* Reduced from 62px */
+    width: 44px;
     height: 44px;
     border-radius: 12px;
     display: flex;
@@ -43,6 +49,7 @@
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     transition: all 0.25s ease;
+    flex-shrink: 0;
 
     svg {
       width: 22px;
@@ -63,7 +70,7 @@
   }
 
   .card-name {
-    font-size: 1.05rem; /* Natural size */
+    font-size: 1.05rem;
     font-weight: 800;
     color: #f1f5f9;
     margin-bottom: 4px;
@@ -116,23 +123,48 @@
 @media (max-width: 860px) {
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .categories-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
   .category-card {
-    flex-direction: row;
-    text-align: right;
-    gap: 12px;
-    padding: 12px 14px;
+    flex-direction: column !important;
+    padding: 10px 8px !important;
+    align-items: center !important;
+    text-align: center !important;
+    min-width: 0 !important;
+    width: 100% !important;
 
     .card-icon-box {
-      margin-bottom: 0;
-      flex-shrink: 0;
+      width: 36px !important;
+      height: 36px !important;
+      margin-bottom: 4px !important;
+      svg {
+        width: 18px !important;
+        height: 18px !important;
+      }
+    }
+    .card-tag {
+      font-size: 0.62rem !important;
+      margin-bottom: 2px !important;
+    }
+    .card-name {
+      font-size: 0.88rem !important;
+      margin-bottom: 2px !important;
+    }
+    .card-summary {
+      font-size: 0.68rem !important;
+      line-height: 1.2 !important;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
   }
 }
